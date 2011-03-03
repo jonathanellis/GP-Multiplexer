@@ -9,6 +9,8 @@ public class Multiplexer {
 	private static int MAX_EPOCHS = 100000;
 	private static double MUTATION_PROB = 0.1; // Probability of mutation
 	private static double CROSSOVER_PROB = 0.8; // Probability of crossover
+	private static int TOURNAMENT_SIZE = 100;
+	
 	Random rng = new Random();
 	
 	private Operator correctSolution() {
@@ -55,28 +57,19 @@ public class Multiplexer {
 		return sample;
 	}
 	
-	public ArrayList<Operator> tournamentSelect(ArrayList<Operator> population) {
+	public Operator tournamentSelect(ArrayList<Operator> population) {
 		Operator best = null;
 		int bestFitness = -1;
-		Operator secondBest = null;
-		int secondBestFitness = -1;
-		ArrayList<Operator> sample = randomSample(population, 50);
+
+		ArrayList<Operator> sample = randomSample(population, TOURNAMENT_SIZE);
 		for (Operator o : sample) {
 			int f = computeFitness(o);
 			if (f > bestFitness) {
-				secondBest = best;
-				secondBestFitness = bestFitness;
 				best = o;
 				bestFitness = f;
-			} else if (f > secondBestFitness) {
-				secondBest = o;
-				secondBestFitness = f;
 			}
 		}
-		ArrayList<Operator> bestTwo = new ArrayList<Operator>();
-		bestTwo.add(best);
-		bestTwo.add(secondBest);
-		return bestTwo;
+		return best;
 	}
 	
 	public ArrayList<Operator> crossover(Operator mother, Operator father) {
@@ -202,16 +195,16 @@ public class Multiplexer {
 			ArrayList<Operator> newPopulation = new ArrayList<Operator>();
 			
 			while (newPopulation.size() < population.size()) {
-				ArrayList<Operator> bestTwo = tournamentSelect(population);
+
 				
 				if (rng.nextFloat() < CROSSOVER_PROB) { // crossover
-					ArrayList<Operator> offspring = crossover(bestTwo.get(0), bestTwo.get(1));
+					ArrayList<Operator> offspring = crossover(tournamentSelect(population), tournamentSelect(population));
 					for (Operator o : offspring) {
 						if (rng.nextFloat() < MUTATION_PROB) o = mutate(o);
 					}
 					newPopulation.addAll(offspring);
 				} else { // simple copy
-					newPopulation.add(bestTwo.get(0));
+					newPopulation.add(tournamentSelect(population));
 				}
 			}
 			
