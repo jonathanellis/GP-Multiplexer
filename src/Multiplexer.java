@@ -4,9 +4,11 @@ import java.util.Random;
 public class Multiplexer {
 	
 	private static int INIT_TREE_DEPTH = 3;
-	private static int MAX_TREE_DEPTH = 3;
+	private static int MAX_TREE_DEPTH = 6;
 	private static int POP_SIZE = 500;
 	private static int MAX_EPOCHS = 100000;
+	private static double MUTATION_PROB = 0.1; // Probability of mutation
+	private static double CROSSOVER_PROB = 0.8; // Probability of crossover
 	Random rng = new Random();
 	
 	private Operator correctSolution() {
@@ -133,7 +135,7 @@ public class Multiplexer {
 		ArrayList<Operator> candidates = o.nonTerminalsToList();
 		candidates.addAll(o.terminalsToList());
 		Operator p = randomSelect(candidates);
-		int treeHeight = rng.nextInt(4) + 2;
+		int treeHeight = rng.nextInt(4)+1;
 		Operator newTree = generateRandomTree(treeHeight);
 		o.swapSubtree(p, newTree);
 		
@@ -201,12 +203,16 @@ public class Multiplexer {
 			
 			while (newPopulation.size() < population.size()) {
 				ArrayList<Operator> bestTwo = tournamentSelect(population);
-				ArrayList<Operator> offspring = crossover(bestTwo.get(0), bestTwo.get(1));
-				for (Operator o : offspring) {
-					float r = rng.nextFloat();
-					if (r < 0.1) o = mutate(o);
+				
+				if (rng.nextFloat() < CROSSOVER_PROB) { // crossover
+					ArrayList<Operator> offspring = crossover(bestTwo.get(0), bestTwo.get(1));
+					for (Operator o : offspring) {
+						if (rng.nextFloat() < MUTATION_PROB) o = mutate(o);
+					}
+					newPopulation.addAll(offspring);
+				} else { // simple copy
+					newPopulation.add(bestTwo.get(0));
 				}
-				newPopulation.addAll(offspring);
 			}
 			
 			for (Operator o : newPopulation) {
