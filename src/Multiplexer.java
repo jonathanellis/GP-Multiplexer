@@ -69,27 +69,26 @@ public class Multiplexer {
 		return sample;
 	}
 	
-	public ArrayList<Operator> tournamentSelect(ArrayList<Operator> population) {
+	public Operator bestOperator(ArrayList<Operator> sample) {
 		Operator best = null;
 		int bestFitness = -1;
-		Operator secondBest = null;
-		int secondBestFitness = -1;
-		ArrayList<Operator> sample = randomSample(population, 50);
 		for (Operator o : sample) {
 			int f = computeFitness(o);
 			if (f > bestFitness) {
-				secondBest = best;
-				secondBestFitness = bestFitness;
 				best = o;
 				bestFitness = f;
-			} else if (f > secondBestFitness) {
-				secondBest = o;
-				secondBestFitness = f;
 			}
 		}
+		return best;
+	}
+	
+	public ArrayList<Operator> tournamentSelect(ArrayList<Operator> population) {
 		ArrayList<Operator> bestTwo = new ArrayList<Operator>();
-		bestTwo.add(best);
-		bestTwo.add(secondBest);
+		ArrayList<Operator> sample;
+		sample = randomSample(population, 50);
+		bestTwo.add(bestOperator(sample));
+		sample = randomSample(population, 50);
+		bestTwo.add(bestOperator(sample));
 		return bestTwo;
 	}
 	
