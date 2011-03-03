@@ -26,6 +26,22 @@ public class AndOp extends Operator {
 		}
 	}
 	
+	public void full(int maxDepth) throws Exception {
+		if (maxDepth == 0) {
+		x = generateRandomTerminal();
+		y = generateRandomTerminal();
+		}
+		else if (maxDepth > 0) {
+			x = generateRandomFunction();
+			y = generateRandomFunction();
+			x.full(maxDepth-1);
+			y.full(maxDepth-1);
+		}
+		else if (maxDepth < 0) {
+			throw new Exception("maxDepth can't be lower then 0");
+		}
+	}
+	
 	public ArrayList<Operator> nonTerminalsToList() {
 		ArrayList<Operator> xChildren = x.nonTerminalsToList();
 		ArrayList<Operator> yChildren = y.nonTerminalsToList();

@@ -33,6 +33,22 @@ public class Multiplexer {
 		return root;
 	}
 	
+	private Operator generateFullTree(int depth) throws Exception {
+		Operator root;
+		Random rng = new Random();
+		
+		int r = rng.nextInt(4);
+		if (r == 0) root =  new AndOp();
+		else if (r == 1) root = new OrOp();
+		else if (r == 2) root = new NotOp();
+		else root = new IfOp();
+		
+		root.full(depth-1);
+		//System.out.println(root);
+		return root;
+	}
+	
+	
 	public Operator randomSelect(ArrayList<Operator> population) {
 		int r = rng.nextInt(population.size());
 		return population.get(r);
@@ -184,13 +200,25 @@ public class Multiplexer {
 		return fitness;
 	}
 	
-	private ArrayList<Operator> generatePopulation(int size) {
+	private ArrayList<Operator> generatePopulation(int size) throws Exception { 
+		// Ramped half-and-half method for a diverse set of population
 		ArrayList<Operator> population = new ArrayList<Operator>();
-		for (int i=0; i<size; i++) population.add(generateRandomTree(INIT_TREE_DEPTH));
+		//System.out.println(size);
+		int depthPop = size / (INIT_TREE_DEPTH-1);
+		//System.out.println("depthPop: " + depthPop);
+		for (int i=2; i<=INIT_TREE_DEPTH; i++) {
+			//System.out.println("i: " + i);
+			for (int j=0; j<depthPop; j++) {
+				//System.out.println("j: " + j);
+				if (j >= (depthPop/2)) population.add(generateRandomTree(i));
+				else population.add(generateFullTree(i));
+			}
+		}
+		//System.exit(0);
 		return population;
 	}
 	
-	public void evolve() {
+	public void evolve() throws Exception {
 		// generate initial population
 		ArrayList<Operator> population = generatePopulation(POP_SIZE);
 		int bestFitness = -1;
@@ -223,7 +251,12 @@ public class Multiplexer {
 	
 	public static void main(String[] args) {
 		Multiplexer mux = new Multiplexer();
-		mux.evolve();
+		try {
+			mux.evolve();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		//Operator correctSolution = mux.correctSolution();
 		//int f = mux.computeFitness(correctSolution);

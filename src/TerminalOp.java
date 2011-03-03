@@ -34,6 +34,10 @@ public class TerminalOp extends Operator {
 		// do nothing
 	}
 	
+	public void full(int maxDepth) throws Exception {
+		// do nothing
+	}
+	
 	public void swapSubtree(Operator o, Operator n) {
 		// do nothing
 	}
