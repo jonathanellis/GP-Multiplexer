@@ -7,7 +7,7 @@ public class Multiplexer {
 	private static int MAX_TREE_DEPTH = 6;
 	private static int POP_SIZE = 500;
 	private static int MAX_EPOCHS = 100000;
-	private static double MUTATION_PROB = 0.1; // Probability of mutation
+	private static double MUTATION_PROB = 0.2; // Probability of mutation
 	private static double CROSSOVER_PROB = 0.8; // Probability of crossover
 	private static int TOURNAMENT_SIZE = 100;
 	
@@ -127,10 +127,12 @@ public class Multiplexer {
 	public Operator mutate(Operator o) {
 		ArrayList<Operator> candidates = o.nonTerminalsToList();
 		candidates.addAll(o.terminalsToList());
-		Operator p = randomSelect(candidates);
-		int treeHeight = rng.nextInt(4)+1;
-		Operator newTree = generateRandomTree(treeHeight);
-		o.swapSubtree(p, newTree);
+		do {
+			Operator p = randomSelect(candidates);
+			int treeHeight = rng.nextInt(4)+1;
+			Operator newTree = generateRandomTree(treeHeight);
+			o.swapSubtree(p, newTree);
+		} while (o.treeMaxHeight() > MAX_TREE_DEPTH);
 		
 		return o;
 	}
