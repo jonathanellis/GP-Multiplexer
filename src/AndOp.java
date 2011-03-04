@@ -67,5 +67,10 @@ public class AndOp extends Operator {
 	public String toString() {
 		return "(" + x + " && " + y + ")";
 	}
+	
+	
+	public String mathematicaNotation() {
+		return "And[" + x.mathematicaNotation() + " , " + y.mathematicaNotation() + "]";
+	}
 
 }

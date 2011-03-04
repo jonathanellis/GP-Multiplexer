@@ -49,4 +49,8 @@ public class NotOp extends Operator {
 	public String toString() {
 		return "!" + x;
 	}
+	
+	public String mathematicaNotation() {
+		return "Not[" + x.mathematicaNotation() + "]";
+	}
 }

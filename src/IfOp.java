@@ -83,4 +83,8 @@ public class IfOp extends Operator {
 		return "(" + x + " ? " + y + " : " + z + ")";
 	}
 	
+	public String mathematicaNotation() {
+		return "If[" + x.mathematicaNotation() + ", " + y.mathematicaNotation() + ", " + z.mathematicaNotation() + "]";
+	}
+	
 }

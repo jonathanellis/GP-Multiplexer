@@ -125,6 +125,7 @@ public class Multiplexer {
 	}
 	
 	public Operator mutate(Operator o) {
+	//	System.out.println("Mutating tree: " + o);
 		ArrayList<Operator> candidates = o.nonTerminalsToList();
 		candidates.addAll(o.terminalsToList());
 		do {
@@ -133,7 +134,7 @@ public class Multiplexer {
 			Operator newTree = generateRandomTree(treeHeight);
 			o.swapSubtree(p, newTree);
 		} while (o.treeMaxHeight() > MAX_TREE_DEPTH);
-		
+	//	System.out.println("Resulting tree: " + o + "\n\n");
 		return o;
 	}
 	
@@ -212,7 +213,7 @@ public class Multiplexer {
 			
 			for (Operator o : newPopulation) {
 				int f = computeFitness(o);
-				//System.out.println(o);
+			//	System.out.println(o.mathematicaNotation());
 				if (f > bestFitness) bestFitness = f;
 				if (f > genBestFitness) genBestFitness = f;
 			}
@@ -225,10 +226,6 @@ public class Multiplexer {
 	public static void main(String[] args) {
 		Multiplexer mux = new Multiplexer();
 		mux.evolve();
-		
-		//Operator correctSolution = mux.correctSolution();
-		//int f = mux.computeFitness(correctSolution);
-		//System.out.println(correctSolution.treeMaxHeight());
 	}
 	
 }

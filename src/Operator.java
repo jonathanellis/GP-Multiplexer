@@ -10,6 +10,7 @@ public abstract class Operator implements Cloneable {
 	public abstract void swapSubtree(Operator o, Operator n);
 	public abstract Operator clone();
 	public abstract int treeMaxHeight();
+	public abstract String mathematicaNotation();
 	
 	public Operator generateRandomChild(int maxDepth) {
 		if (maxDepth == 0) return generateRandomTerminal();

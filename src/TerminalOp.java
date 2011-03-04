@@ -47,6 +47,10 @@ public class TerminalOp extends Operator {
 	}
 	
 	public String toString() {
-		return (t + "");
+		return t + "";
+	}
+	
+	public String mathematicaNotation() {
+		return t + "";
 	}
 }

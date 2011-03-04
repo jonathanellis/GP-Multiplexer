@@ -69,4 +69,12 @@ public class OrOp extends Operator {
 	public String toString() {
 		return "(" + x + " || " + y + ")";
 	}
+	
+	protected String uniqueName() {
+		return "OR (" + this.hashCode() + ")";
+	}
+	
+	public String mathematicaNotation() {
+		return "Or[" + x.mathematicaNotation() + " , " + y.mathematicaNotation() + "]";
+	}
 }
