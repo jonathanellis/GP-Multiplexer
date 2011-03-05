@@ -73,21 +73,12 @@ public class Multiplexer {
 	}
 	
 	public ArrayList<Operator> crossover(Operator mother, Operator father) {
-
-//		System.out.println("INmother: " + mother);
-//		System.out.println("INfather: " + father);
-//		System.out.println("***");
-
 		Operator motherCopy;
 		Operator fatherCopy;
 		
 		do {
 			motherCopy = mother.clone();
 			fatherCopy = father.clone();
-			
-//			System.out.println(motherCopy.nonTerminalsToList().size());
-//			System.out.println(motherCopy.terminalsToList().size());
-
 			
 			ArrayList<Operator> mCandidates;
 			if (rng.nextFloat() < 0.9) mCandidates = motherCopy.nonTerminalsToList();
@@ -100,32 +91,20 @@ public class Multiplexer {
 			else fCandidates = fatherCopy.terminalsToList();
 			Operator fOp = randomSelect(fCandidates);
 			
-//			System.out.println("MOP: " + mOp);
-//			System.out.println("FOP: " + fOp);
-//			System.out.println("***");
-			
 			if (fOp == fatherCopy) fatherCopy = mOp.clone();
 			else fatherCopy.swapSubtree(fOp, mOp.clone());
 			
 			if (mOp == motherCopy) motherCopy = fOp.clone();
 			else motherCopy.swapSubtree(mOp, fOp.clone());
-		} while (motherCopy.treeMaxHeight() > MAX_TREE_DEPTH && fatherCopy.treeMaxHeight() > MAX_TREE_DEPTH);
+		} while (motherCopy.treeMaxHeight() > MAX_TREE_DEPTH || fatherCopy.treeMaxHeight() > MAX_TREE_DEPTH);
 
 		ArrayList<Operator> offspring = new ArrayList<Operator>();
-		
-//		System.out.println("OUTmother: " + motherCopy);
-//		System.out.println("OUTfather: " + fatherCopy);
-//		System.out.println("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
 		offspring.add(motherCopy);
 		offspring.add(fatherCopy);
-			
-	
-		//System.exit(0);
 		return offspring;
 	}
 	
 	public Operator mutate(Operator o) {
-	//	System.out.println("Mutating tree: " + o);
 		ArrayList<Operator> candidates = o.nonTerminalsToList();
 		candidates.addAll(o.terminalsToList());
 		do {
@@ -134,7 +113,6 @@ public class Multiplexer {
 			Operator newTree = generateRandomTree(treeHeight);
 			o.swapSubtree(p, newTree);
 		} while (o.treeMaxHeight() > MAX_TREE_DEPTH);
-	//	System.out.println("Resulting tree: " + o + "\n\n");
 		return o;
 	}
 	
@@ -213,7 +191,10 @@ public class Multiplexer {
 			
 			for (Operator o : newPopulation) {
 				int f = computeFitness(o);
-				if (f == 64) System.out.println(o.mathematicaNotation());
+				if (f == 64) {
+					System.out.println(o.mathematicaNotation());
+					System.out.println(o.treeMaxHeight());
+				}
 				if (f > bestFitness) bestFitness = f;
 				if (f > genBestFitness) genBestFitness = f;
 			}
