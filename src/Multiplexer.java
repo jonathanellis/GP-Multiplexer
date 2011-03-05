@@ -7,7 +7,7 @@ public class Multiplexer {
 	private static int MAX_TREE_DEPTH = 6;
 	private static int POP_SIZE = 500;
 	private static int MAX_EPOCHS = 100000;
-	private static double MUTATION_PROB = 0.2; // Probability of mutation
+	private static double MUTATION_PROB = 0.1; // Probability of mutation
 	private static double CROSSOVER_PROB = 0.8; // Probability of crossover
 	private static int TOURNAMENT_SIZE = 100;
 	
@@ -213,14 +213,16 @@ public class Multiplexer {
 			
 			for (Operator o : newPopulation) {
 				int f = computeFitness(o);
-			//	System.out.println(o.mathematicaNotation());
+				if (f == 64) System.out.println(o.mathematicaNotation());
 				if (f > bestFitness) bestFitness = f;
 				if (f > genBestFitness) genBestFitness = f;
 			}
 		
-			
+			population  = newPopulation;
 			System.out.println(g + "> " + bestFitness);
 		}
+		
+		
 	}
 	
 	public static void main(String[] args) {
