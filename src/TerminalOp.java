@@ -2,15 +2,23 @@ import java.util.ArrayList;
 
 
 public class TerminalOp extends Operator {
+        public int midTerm = -1;
 	public enum terminal {a0, a1, d0, d1, d2, d3};
 	private terminal t;
+	
+	public TerminalOp (int t) {
+	        midTerm = t;
+	}
 	
 	public TerminalOp (terminal t) {
 		this.t = t;
 	}
 	
+	public void prune(int h) {}
 	// evaluates the given terminal under a specific valuation
 	public boolean evaluate(Valuation v) {
+	        if(midTerm > -1) return ((MidTreeValuation)v).testCase[midTerm] == 1;
+	        
 		if (t == terminal.a0) return v.a0;
 		if (t == terminal.a1) return v.a1;
 		if (t == terminal.d0) return v.d0;

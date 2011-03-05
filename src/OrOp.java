@@ -13,7 +13,15 @@ public class OrOp extends Operator {
 		this.x = x;
 		this.y = y;
 	}
-	
+	public void prune(int h) {
+	        if(h == 2) {
+	                this.x = generateRandomTerminal();
+	                this.y = generateRandomTerminal();
+	         } else {
+	                x.prune(h-1);
+	                y.prune(h-1);
+	         }
+	}
 	// Could change this to lazy or (time-saving):
 	public boolean evaluate(Valuation v) {
 		return x.evaluate(v) || y.evaluate(v);

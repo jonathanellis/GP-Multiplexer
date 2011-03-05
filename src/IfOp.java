@@ -15,7 +15,17 @@ public class IfOp extends Operator {
 		this.y = y;
 		this.z = z;
 	}
-	
+	public void prune(int h) {
+	        if(h == 2) {
+	                this.x = generateRandomTerminal();
+	                this.y = generateRandomTerminal();
+	                this.z = generateRandomTerminal();
+	         } else {
+	                x.prune(h-1);
+	                y.prune(h-1);
+	                z.prune(h-1);
+	         }
+	}
 	public boolean evaluate(Valuation v) {
 		if (x.evaluate(v)) return y.evaluate(v);
 		return z.evaluate(v);

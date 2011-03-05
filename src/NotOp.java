@@ -15,7 +15,10 @@ public class NotOp extends Operator {
 	public boolean evaluate(Valuation v) {
 		return !x.evaluate(v);
 	}
-	
+	public void prune(int h) {
+	        if(h == 2) this.x = generateRandomTerminal();
+	        else x.prune(h-1);
+	}
 	public void grow(int maxDepth) {
 		x = generateRandomChild(maxDepth);
 		if (maxDepth > 0) x.grow(maxDepth-1);

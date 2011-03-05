@@ -3,10 +3,16 @@ import java.util.Random;
 
 public class Multiplexer {
 	
-	private static int INIT_TREE_DEPTH = 3;
-	private static int MAX_TREE_DEPTH = 3;
+	private static int INIT_TREE_DEPTH = 15;
+	private static int MAX_TREE_DEPTH = 15;
 	private static int POP_SIZE = 500;
 	private static int MAX_EPOCHS = 100000;
+	public static int TOTAL_LINES = 16;
+	
+	// MID_LOWER < sum < MIDUPPER
+	private static int MID_LOWER = 6;
+	private static int MID_UPPER = 10;
+	private static int[][] testCases;
 	Random rng = new Random();
 	
 	private Operator correctSolution() {
@@ -69,26 +75,20 @@ public class Multiplexer {
 		return sample;
 	}
 	
-	public Operator bestOperator(ArrayList<Operator> sample) {
-		Operator best = null;
-		int bestFitness = -1;
-		for (Operator o : sample) {
-			int f = computeFitness(o);
-			if (f > bestFitness) {
-				best = o;
-				bestFitness = f;
-			}
-		}
-		return best;
-	}
-	
-	public ArrayList<Operator> tournamentSelect(ArrayList<Operator> population) {
+        public ArrayList<Operator> tournamentSelect(ArrayList<Operator> population) {
 		ArrayList<Operator> bestTwo = new ArrayList<Operator>();
-		ArrayList<Operator> sample;
-		sample = randomSample(population, 50);
-		bestTwo.add(bestOperator(sample));
-		sample = randomSample(population, 50);
-		bestTwo.add(bestOperator(sample));
+		
+		Operator a = population.get(rng.nextInt(population.size()));
+		Operator b = population.get(rng.nextInt(population.size()));
+		Operator c = population.get(rng.nextInt(population.size()));
+		Operator d = population.get(rng.nextInt(population.size()));
+		
+		if(a.getFitness(this) > b.getFitness(this)) bestTwo.add(a);
+		else bestTwo.add(b);
+		
+		if(a.getFitness(this) > b.getFitness(this)) bestTwo.add(c);
+		else bestTwo.add(d);
+		
 		return bestTwo;
 	}
 	
@@ -97,11 +97,11 @@ public class Multiplexer {
 //		System.out.println("INmother: " + mother);
 //		System.out.println("INfather: " + father);
 //		System.out.println("***");
-
+                
 		Operator motherCopy;
 		Operator fatherCopy;
 		
-		do {
+		//do {
 			motherCopy = mother.clone();
 			fatherCopy = father.clone();
 			
@@ -112,12 +112,15 @@ public class Multiplexer {
 			ArrayList<Operator> mCandidates;
 			if (rng.nextFloat() < 0.9) mCandidates = motherCopy.nonTerminalsToList();
 			else mCandidates = motherCopy.terminalsToList();
+			if(mCandidates.size() == 0) mCandidates = motherCopy.terminalsToList();
 			
 			Operator mOp = randomSelect(mCandidates);
 			
 			ArrayList<Operator> fCandidates;
 			if (rng.nextFloat() < 0.9) fCandidates = fatherCopy.nonTerminalsToList();
 			else fCandidates = fatherCopy.terminalsToList();
+			if(fCandidates.size() == 0) fCandidates = fatherCopy.terminalsToList();
+			
 			Operator fOp = randomSelect(fCandidates);
 			
 //			System.out.println("MOP: " + mOp);
@@ -129,7 +132,14 @@ public class Multiplexer {
 			
 			if (mOp == motherCopy) motherCopy = fOp.clone();
 			else motherCopy.swapSubtree(mOp, fOp.clone());
-		} while (motherCopy.treeMaxHeight() > MAX_TREE_DEPTH && fatherCopy.treeMaxHeight() > MAX_TREE_DEPTH);
+			
+			fatherCopy.prune(MAX_TREE_DEPTH);
+			motherCopy.prune(MAX_TREE_DEPTH);
+			
+			//generate fitness values, cache them in the trees
+			fatherCopy.getFitness(this);
+			motherCopy.getFitness(this);
+		//} while (motherCopy.treeMaxHeight() > MAX_TREE_DEPTH && fatherCopy.treeMaxHeight() > MAX_TREE_DEPTH);
 
 		ArrayList<Operator> offspring = new ArrayList<Operator>();
 		
@@ -154,49 +164,37 @@ public class Multiplexer {
 		
 		return o;
 	}
+	public void generateTestInputs() {
+	        int testSpace = (int)Math.pow(2,TOTAL_LINES);
+	        testCases = new int[testSpace][TOTAL_LINES];
 	
-	public int computeFitness(Operator tree) {
+	        //counts in binary and adds to array
+	        for(int i = 0; i < testSpace; i++)
+                        for(int j = 0; j < TOTAL_LINES; j++) 
+                                testCases[i][j] = (i & (int)Math.pow(2,(TOTAL_LINES - j - 1))) > 0 ? 1 : 0;
+	        
+	        //uncomment this to see binary
+	        /*for(int i = 0; i < testSpace; i++) {
+                       for(int j = 0; j < TOTAL_LINES; j++) System.out.print(testCases[i][j]+" ");
+                       System.out.println("");
+                }*/
+	}
+	
+	public double computeFitness(Operator tree) {
+		int testSpace = (int)Math.pow(2,TOTAL_LINES);
 		int fitness = 0;
-		for (int a0=0; a0<=1; a0++) {
-			for (int a1=0; a1<=1; a1++) {
-				for (int d0=0; d0<=1; d0++) {
-					for (int d1=0; d1<=1; d1++) {
-						for (int d2=0; d2<=1; d2++) {
-							for (int d3=0; d3<=1; d3++) {
-								
-								boolean a0b = a0 > 0;
-								boolean a1b = a1 > 0;
-								boolean d0b = d0 > 0;
-								boolean d1b = d1 > 0;
-								boolean d2b = d2 > 0;
-								boolean d3b = d3 > 0;
-								
-								boolean actualOutput = tree.evaluate(new Valuation(a0, a1, d0, d1, d2, d3));
-								
-								// use existing program:
-								
-								boolean correctOutput;
-								
-								if (a0b && a1b) {
-									correctOutput = d3b;
-								} else {
-									if (a0b) {
-										correctOutput = d1b;
-									} else {
-										if (a1b) correctOutput = d2b;
-										else correctOutput = d0b;
-									}
-								}
-								
-								if (actualOutput == correctOutput) fitness++;
-								
-							}
-						}
-					}
-				}
-			}
-		}
-		return fitness;
+		
+		//iterate accross test space
+		for(int i=0; i<testSpace; i++) {
+		        int sum = 0;
+		        for(int j=0; j<TOTAL_LINES; j++) sum += testCases[i][j];
+		        
+		        boolean testResult = sum > MID_LOWER && sum < MID_UPPER;
+		        boolean actualResult = tree.evaluate(new MidTreeValuation(testCases[i]));
+		        
+		        if(testResult == actualResult) fitness++;
+	        }					
+		return 1. * fitness / testSpace;
 	}
 	
 	private ArrayList<Operator> generatePopulation(int size) throws Exception { 
@@ -204,26 +202,45 @@ public class Multiplexer {
 		ArrayList<Operator> population = new ArrayList<Operator>();
 		//System.out.println(size);
 		int depthPop = size / (INIT_TREE_DEPTH-1);
+		
+		System.out.print("generating initial population");
 		//System.out.println("depthPop: " + depthPop);
 		for (int i=2; i<=INIT_TREE_DEPTH; i++) {
 			//System.out.println("i: " + i);
 			for (int j=0; j<depthPop; j++) {
+			        Operator candidate;
+				
 				//System.out.println("j: " + j);
-				if (j >= (depthPop/2)) population.add(generateRandomTree(i));
-				else population.add(generateFullTree(i));
+				if (j >= (depthPop/2)) candidate = generateRandomTree(i);
+				else candidate = generateFullTree(i);
+				
+				boolean duplicate = false;
+				for(int k = 0; k < population.size() && !duplicate; k++)
+				        duplicate = population.get(k).compare(candidate);
+				
+				if(!duplicate) {
+				        population.add(candidate);
+				        System.out.print(".");
+				}
+				else j--;
 			}
 		}
+		System.out.println("done");
 		//System.exit(0);
 		return population;
 	}
 	
 	public void evolve() throws Exception {
+        	double bestFitness = -1;
+	
 		// generate initial population
 		ArrayList<Operator> population = generatePopulation(POP_SIZE);
-		int bestFitness = -1;
 		
-		for (int g=0; g<MAX_EPOCHS; g++) {
-			int genBestFitness = -1;
+		generateTestInputs();
+		
+		for (int g=0; g<MAX_EPOCHS && bestFitness < 1.0; g++) {
+			double genBestFitness = -1;
+			double fSum = 0;
 			ArrayList<Operator> newPopulation = new ArrayList<Operator>();
 			
 			while (newPopulation.size() < population.size()) {
@@ -234,22 +251,31 @@ public class Multiplexer {
 					if (r < 0.1) o = mutate(o);
 				}
 				newPopulation.addAll(offspring);
+				System.out.print(".");
 			}
 			
+			
 			for (Operator o : newPopulation) {
-				int f = computeFitness(o);
+				double f = o.getFitness(this);
+				fSum += f;
+				
 				//System.out.println(o);
 				if (f > bestFitness) bestFitness = f;
 				if (f > genBestFitness) genBestFitness = f;
 			}
-		
 			
-			System.out.println(g + "> " + bestFitness);
+			System.out.println(g + "> " + genBestFitness + " : " + bestFitness);
+			
+			population = newPopulation;
+			
+			//normalise fitnesses
+			for(Operator o : population) o.normaliseFitness(this,fSum);
 		}
 	}
 	
 	public static void main(String[] args) {
 		Multiplexer mux = new Multiplexer();
+
 		try {
 			mux.evolve();
 		} catch (Exception e) {
