@@ -4,7 +4,7 @@ import java.util.Random;
 public class Multiplexer {
 	
 	private static int INIT_TREE_DEPTH = 3;
-	private static int MAX_TREE_DEPTH = 6;
+	private static int MAX_TREE_DEPTH = 8;
 	private static int POP_SIZE = 500;
 	private static int MAX_EPOCHS = 100000;
 	private static double MUTATION_PROB = 0.1; // Probability of mutation

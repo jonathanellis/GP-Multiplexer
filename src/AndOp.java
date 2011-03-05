@@ -60,7 +60,7 @@ public class AndOp extends Operator {
 	public int treeMaxHeight() {
 		int xHeight = x.treeMaxHeight();
 		int yHeight = y.treeMaxHeight();
-		if (xHeight > yHeight) return xHeight;
+		if (xHeight > yHeight) return 1+xHeight;
 		return 1+yHeight;
 	}
 	

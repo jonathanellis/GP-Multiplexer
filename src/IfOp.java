@@ -74,8 +74,8 @@ public class IfOp extends Operator {
 		int xHeight = x.treeMaxHeight();
 		int yHeight = y.treeMaxHeight();
 		int zHeight = z.treeMaxHeight();
-		if ((xHeight > yHeight) && (xHeight > zHeight)) return xHeight;
-		if (yHeight > zHeight) return yHeight;
+		if ((xHeight > yHeight) && (xHeight > zHeight)) return 1+xHeight;
+		if (yHeight > zHeight) return 1+yHeight;
 		return 1+zHeight;
 	}
 	
