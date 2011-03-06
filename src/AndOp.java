@@ -13,7 +13,7 @@ public class AndOp extends Operator {
 		this.y = y;
 	}
 	
-	public boolean evaluate(Valuation v) {
+	public boolean evaluate(SixValuation v) {
 		return x.evaluate(v) && y.evaluate(v);
 	}
 

@@ -119,7 +119,7 @@ public class Multiplexer {
 	public int computeFitness(Operator tree) {
 		int fitness = 0;
 		for (int i=0; i<64; i++) {
-			Valuation v = new Valuation(i);
+			SixValuation v = new SixValuation(i);
 			boolean actualOutput = tree.evaluate(v);
 			boolean correctOutput = v.correctOutput();
 			

@@ -15,7 +15,7 @@ public class OrOp extends Operator {
 	}
 	
 	// Could change this to lazy or (time-saving):
-	public boolean evaluate(Valuation v) {
+	public boolean evaluate(SixValuation v) {
 		return x.evaluate(v) || y.evaluate(v);
 	}
 	

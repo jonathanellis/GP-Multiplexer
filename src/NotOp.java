@@ -12,7 +12,7 @@ public class NotOp extends Operator {
 		this.x = x;
 	}
 	
-	public boolean evaluate(Valuation v) {
+	public boolean evaluate(SixValuation v) {
 		return !x.evaluate(v);
 	}
 	
