@@ -16,7 +16,7 @@ public class IfOp extends Operator {
 		this.z = z;
 	}
 	
-	public boolean evaluate(SixValuation v) {
+	public boolean evaluate(Valuation v) {
 		if (x.evaluate(v)) return y.evaluate(v);
 		return z.evaluate(v);
 	}

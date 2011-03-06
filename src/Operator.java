@@ -3,7 +3,7 @@ import java.util.Random;
 
 public abstract class Operator implements Cloneable {
 	protected Random rng = new Random();
-	public abstract boolean evaluate(SixValuation v);
+	public abstract boolean evaluate(Valuation v);
 	public abstract void grow(int maxDepth);
 	public abstract ArrayList<Operator> nonTerminalsToList();
 	public abstract ArrayList<Operator> terminalsToList();
@@ -13,10 +13,10 @@ public abstract class Operator implements Cloneable {
 	public abstract String mathematicaNotation();
 	
 	public Operator generateRandomChild(int maxDepth) {
-		if (maxDepth == 0) return new TerminalOp(6);
+		if (maxDepth == 0) return new TerminalOp(11);
 		
 		boolean r = rng.nextBoolean(); // 50% probability of terminal vs function
-		if (r) return new TerminalOp(6);
+		if (r) return new TerminalOp(11);
 		return generateRandomFunction();
 	}
 	

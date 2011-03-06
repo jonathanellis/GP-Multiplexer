@@ -4,7 +4,7 @@ import java.util.Random;
 public class Multiplexer {
 	
 	private static int INIT_TREE_DEPTH = 3;
-	private static int MAX_TREE_DEPTH = 8;
+	private static int MAX_TREE_DEPTH = 12;
 	private static int POP_SIZE = 500;
 	private static int MAX_EPOCHS = 100000;
 	private static double MUTATION_PROB = 0.15; // Probability of mutation
@@ -13,15 +13,7 @@ public class Multiplexer {
 	
 	Random rng = new Random();
 	
-	private Operator correctSolution() {
-		// (IF Al (IF A0 D3 D2) (IF A0 D1 D0))
-		
-		IfOp a = new IfOp(new TerminalOp("a0"), new TerminalOp("d3"), new TerminalOp("d2"));
-		IfOp b = new IfOp(new TerminalOp("a0"), new TerminalOp("d1"), new TerminalOp("d0"));
-		IfOp c = new IfOp(new TerminalOp("a1"), a, b);
-		return c;
-	}
-	
+
 	private Operator generateRandomTree(int depth) {
 		Operator root;
 		Random rng = new Random();
@@ -119,7 +111,7 @@ public class Multiplexer {
 	public int computeFitness(Operator tree) {
 		int fitness = 0;
 		for (int i=0; i<64; i++) {
-			SixValuation v = new SixValuation(i);
+			Valuation v = new Valuation(i, 6);
 			boolean actualOutput = tree.evaluate(v);
 			boolean correctOutput = v.correctOutput();
 			

@@ -25,7 +25,7 @@ public class TerminalOp extends Operator {
 	}
 	
 	// evaluates the given terminal under a specific valuation
-	public boolean evaluate(SixValuation v) {
+	public boolean evaluate(Valuation v) {
 		return v.valueForTerminal(t);
 	}
 	
