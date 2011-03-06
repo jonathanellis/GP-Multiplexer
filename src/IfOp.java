@@ -6,11 +6,12 @@ public class IfOp extends Operator {
 	private Operator y;
 	private Operator z;
 	
-	public IfOp() {
-		// default constructor
+	public IfOp(int multiplexerOrder) {
+		super(multiplexerOrder);
 	}
 	
-	public IfOp(Operator x, Operator y, Operator z) {
+	public IfOp(int multiplexerOrder, Operator x, Operator y, Operator z) {
+		super(multiplexerOrder);
 		this.x = x;
 		this.y = y;
 		this.z = z;
@@ -65,7 +66,7 @@ public class IfOp extends Operator {
 	
 	
 	public Operator clone() {
-		IfOp o = new IfOp(x.clone(), y.clone(), z.clone());
+		IfOp o = new IfOp(order, x.clone(), y.clone(), z.clone());
 		return o;
 		
 	}

@@ -4,25 +4,29 @@ import java.util.Random;
 public class Multiplexer {
 	
 	private static int INIT_TREE_DEPTH = 3;
-	private static int MAX_TREE_DEPTH = 12;
+	private static int MAX_TREE_DEPTH = 8;
 	private static int POP_SIZE = 500;
 	private static int MAX_EPOCHS = 100000;
 	private static double MUTATION_PROB = 0.15; // Probability of mutation
 	private static double CROSSOVER_PROB = 0.8; // Probability of crossover
-	private static int TOURNAMENT_SIZE = 100;
+	private static int TOURNAMENT_SAMPLE_SIZE = 50;
+	private int order = 6;
 	
 	Random rng = new Random();
 	
+	public Multiplexer(int order) {
+		this.order = order;
+	}
 
 	private Operator generateRandomTree(int depth) {
 		Operator root;
 		Random rng = new Random();
 		
 		int r = rng.nextInt(4);
-		if (r == 0) root =  new AndOp();
-		else if (r == 1) root = new OrOp();
-		else if (r == 2) root = new NotOp();
-		else root = new IfOp();
+		if (r == 0) root =  new AndOp(order);
+		else if (r == 1) root = new OrOp(order);
+		else if (r == 2) root = new NotOp(order);
+		else root = new IfOp(order);
 		
 		root.grow(depth-1);
 			
@@ -53,7 +57,7 @@ public class Multiplexer {
 		Operator best = null;
 		int bestFitness = -1;
 
-		ArrayList<Operator> sample = randomSample(population, TOURNAMENT_SIZE);
+		ArrayList<Operator> sample = randomSample(population, TOURNAMENT_SAMPLE_SIZE);
 		for (Operator o : sample) {
 			int f = computeFitness(o);
 			if (f > bestFitness) {
@@ -109,14 +113,14 @@ public class Multiplexer {
 	}
 	
 	public int computeFitness(Operator tree) {
+		int maxFitness = (int) Math.pow(2, order);
 		int fitness = 0;
-		for (int i=0; i<64; i++) {
-			Valuation v = new Valuation(i, 6);
+		for (int i=0; i<maxFitness; i++) {
+			Valuation v = new Valuation(i, order);
 			boolean actualOutput = tree.evaluate(v);
 			boolean correctOutput = v.correctOutput();
 			
 			if (actualOutput == correctOutput) fitness++;
-
 		}
 		return fitness;
 	}
@@ -136,9 +140,8 @@ public class Multiplexer {
 			int genBestFitness = -1;
 			ArrayList<Operator> newPopulation = new ArrayList<Operator>();
 			
-			while (newPopulation.size() < population.size()) {
+			while (newPopulation.size() < POP_SIZE) { // this does sometimes allow population to grow too big by 1
 
-				
 				if (rng.nextFloat() < CROSSOVER_PROB) { // crossover
 					ArrayList<Operator> offspring = crossover(tournamentSelect(population), tournamentSelect(population));
 					for (Operator o : offspring) {
@@ -164,11 +167,20 @@ public class Multiplexer {
 			System.out.println(g + "> " + bestFitness);
 		}
 		
+	}
+	
+	private Operator correctSolution() {
+		// (IF Al (IF A0 D3 D2) (IF A0 D1 D0))
 		
+	/*	IfOp a = new IfOp(new TerminalOp("a0"), new TerminalOp("d3"), new TerminalOp("d2"));
+		IfOp b = new IfOp(new TerminalOp("a0"), new TerminalOp("d1"), new TerminalOp("d0"));
+		IfOp c = new IfOp(new TerminalOp("a1"), a, b);
+		return c;*/
+		return null;
 	}
 	
 	public static void main(String[] args) {
-		Multiplexer mux = new Multiplexer();
+		Multiplexer mux = new Multiplexer(11);
 		mux.evolve();
 	//	System.out.println(mux.computeFitness(mux.correctSolution()));
 	}

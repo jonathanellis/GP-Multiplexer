@@ -4,11 +4,12 @@ public class AndOp extends Operator {
 	private Operator x;
 	private Operator y;
 	
-	public AndOp() {
-		// default constructor
+	public AndOp(int multiplexerOrder) {
+		super(multiplexerOrder);
 	}
 	
-	public AndOp(Operator x, Operator y) {
+	public AndOp(int multiplexerOrder, Operator x, Operator y) {
+		super(multiplexerOrder);
 		this.x = x;
 		this.y = y;
 	}
@@ -52,7 +53,7 @@ public class AndOp extends Operator {
 	}
 	
 	public Operator clone() {
-		AndOp o = new AndOp(x.clone(), y.clone());
+		AndOp o = new AndOp(order, x.clone(), y.clone());
 		return o;
 		
 	}

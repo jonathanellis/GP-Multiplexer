@@ -5,13 +5,15 @@ public class TerminalOp extends Operator {
 	private String t;
 	
 	// Generates a random terminal, based on the specified range:
-	public TerminalOp(int range) {
-		int r = rng.nextInt(range);
-		if (range == 6) {
+	public TerminalOp(int multiplexerOrder) {
+		super(multiplexerOrder);
+		
+		int r = rng.nextInt(multiplexerOrder);
+		if (multiplexerOrder == 6) {
 			String opts[] = {"a0", "a1", "d0", "d1", "d2", "d3"};
 			t = opts[r];
 		}
-		else if (range == 11) {
+		else if (multiplexerOrder == 11) {
 			String opts[] = {"a0", "a1", "a2", "d0", "d1", "d2", "d3", "d4", "d5", "d6", "d7"};
 			t = opts[r];
 		}
@@ -20,7 +22,8 @@ public class TerminalOp extends Operator {
 		}
 	}
 	
-	public TerminalOp(String t) {
+	public TerminalOp(int multiplexerOrder, String t) {
+		super(multiplexerOrder);
 		this.t = t;
 	}
 	
@@ -48,7 +51,7 @@ public class TerminalOp extends Operator {
 	}
 	// never used in practice:
 	public Operator clone() {
-		return new TerminalOp(this.t);
+		return new TerminalOp(order, this.t);
 	}
 	
 	public int treeMaxHeight() {

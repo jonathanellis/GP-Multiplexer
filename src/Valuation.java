@@ -1,5 +1,3 @@
-
-
 public class Valuation {
 	private boolean values[];
 	private String names[];
@@ -31,6 +29,7 @@ public class Valuation {
 		return false;
 	}
 	
+	// Correct solution for 6-multiplexer:
 	private boolean sixMultiplexerCorrectOutput() {
 		if (values[0] && values[1]) return values[5];
 		if (values[0]) return values[3];
@@ -38,6 +37,7 @@ public class Valuation {
 		return values[2];
 	}
 	
+	// Correct solution for 11-multiplexer:
 	private boolean elevenMultiplexerCorrectOutput() {
 		if (values[0]) {
 			if (values[2]) {

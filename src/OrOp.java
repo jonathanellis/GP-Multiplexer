@@ -2,14 +2,16 @@ import java.util.ArrayList;
 
 
 public class OrOp extends Operator {
+	int multiplexerOrder;
 	private Operator x;
 	private Operator y;
 	
-	public OrOp() {
-		// default constructor
+	public OrOp(int multiplexerOrder) {
+		super(multiplexerOrder);
 	}
 	
-	public OrOp(Operator x, Operator y) {
+	public OrOp(int multiplexerOrder, Operator x, Operator y) {
+		super(multiplexerOrder);
 		this.x = x;
 		this.y = y;
 	}
@@ -62,7 +64,7 @@ public class OrOp extends Operator {
 	}
 	
 	public Operator clone() {
-		OrOp o = new OrOp(x.clone(), y.clone());
+		OrOp o = new OrOp(order, x.clone(), y.clone());
 		return o;
 	}
 	

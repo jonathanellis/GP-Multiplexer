@@ -4,11 +4,12 @@ import java.util.ArrayList;
 public class NotOp extends Operator {
 	private Operator x;
 	
-	public NotOp() {
-		// default constructor
+	public NotOp(int multiplexerOrder) {
+		super(multiplexerOrder);
 	}
 	
-	public NotOp(Operator x) {
+	public NotOp(int multiplexerOrder, Operator x) {
+		super(multiplexerOrder);
 		this.x = x;
 	}
 	
@@ -37,7 +38,7 @@ public class NotOp extends Operator {
 		else x.swapSubtree(o, n);
 	}
 	public Operator clone() {
-		NotOp o = new NotOp(x.clone());
+		NotOp o = new NotOp(order, x.clone());
 		return o;
 		
 	}
