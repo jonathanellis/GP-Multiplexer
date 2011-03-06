@@ -2,22 +2,16 @@ import java.util.ArrayList;
 
 
 public class TerminalOp extends Operator {
-	public enum terminal {a0, a1, d0, d1, d2, d3};
-	private terminal t;
+	private String t;
 	
-	public TerminalOp (terminal t) {
+	
+	public TerminalOp(String t) {
 		this.t = t;
 	}
 	
 	// evaluates the given terminal under a specific valuation
 	public boolean evaluate(Valuation v) {
-		if (t == terminal.a0) return v.a0;
-		if (t == terminal.a1) return v.a1;
-		if (t == terminal.d0) return v.d0;
-		if (t == terminal.d1) return v.d1;
-		if (t == terminal.d2) return v.d2;
-		if (t == terminal.d3) return v.d3;
-		return false; // this should never happen
+		return v.valueForTerminal(t);
 	}
 	
 	public ArrayList<Operator> nonTerminalsToList() {

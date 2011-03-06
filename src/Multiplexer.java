@@ -7,7 +7,7 @@ public class Multiplexer {
 	private static int MAX_TREE_DEPTH = 8;
 	private static int POP_SIZE = 500;
 	private static int MAX_EPOCHS = 100000;
-	private static double MUTATION_PROB = 0.1; // Probability of mutation
+	private static double MUTATION_PROB = 0.15; // Probability of mutation
 	private static double CROSSOVER_PROB = 0.8; // Probability of crossover
 	private static int TOURNAMENT_SIZE = 100;
 	
@@ -16,9 +16,9 @@ public class Multiplexer {
 	private Operator correctSolution() {
 		// (IF Al (IF A0 D3 D2) (IF A0 D1 D0))
 		
-		IfOp a = new IfOp(new TerminalOp(TerminalOp.terminal.a0), new TerminalOp(TerminalOp.terminal.d3), new TerminalOp(TerminalOp.terminal.d2));
-		IfOp b = new IfOp(new TerminalOp(TerminalOp.terminal.a0), new TerminalOp(TerminalOp.terminal.d1), new TerminalOp(TerminalOp.terminal.d0));
-		IfOp c = new IfOp(new TerminalOp(TerminalOp.terminal.a1), a, b);
+		IfOp a = new IfOp(new TerminalOp("a0"), new TerminalOp("d3"), new TerminalOp("d2"));
+		IfOp b = new IfOp(new TerminalOp("a0"), new TerminalOp("d1"), new TerminalOp("d0"));
+		IfOp c = new IfOp(new TerminalOp("a1"), a, b);
 		return c;
 	}
 	
@@ -118,44 +118,13 @@ public class Multiplexer {
 	
 	public int computeFitness(Operator tree) {
 		int fitness = 0;
-		for (int a0=0; a0<=1; a0++) {
-			for (int a1=0; a1<=1; a1++) {
-				for (int d0=0; d0<=1; d0++) {
-					for (int d1=0; d1<=1; d1++) {
-						for (int d2=0; d2<=1; d2++) {
-							for (int d3=0; d3<=1; d3++) {
-								
-								boolean a0b = a0 > 0;
-								boolean a1b = a1 > 0;
-								boolean d0b = d0 > 0;
-								boolean d1b = d1 > 0;
-								boolean d2b = d2 > 0;
-								boolean d3b = d3 > 0;
-								
-								boolean actualOutput = tree.evaluate(new Valuation(a0, a1, d0, d1, d2, d3));
-								
-								// use existing program:
-								
-								boolean correctOutput;
-								
-								if (a0b && a1b) {
-									correctOutput = d3b;
-								} else {
-									if (a0b) {
-										correctOutput = d1b;
-									} else {
-										if (a1b) correctOutput = d2b;
-										else correctOutput = d0b;
-									}
-								}
-								
-								if (actualOutput == correctOutput) fitness++;
-								
-							}
-						}
-					}
-				}
-			}
+		for (int i=0; i<64; i++) {
+			Valuation v = new Valuation(i);
+			boolean actualOutput = tree.evaluate(v);
+			boolean correctOutput = v.correctOutput();
+			
+			if (actualOutput == correctOutput) fitness++;
+
 		}
 		return fitness;
 	}
@@ -209,6 +178,7 @@ public class Multiplexer {
 	public static void main(String[] args) {
 		Multiplexer mux = new Multiplexer();
 		mux.evolve();
+	//	System.out.println(mux.computeFitness(mux.correctSolution()));
 	}
 	
 }

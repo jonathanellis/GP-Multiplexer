@@ -24,12 +24,12 @@ public abstract class Operator implements Cloneable {
 
 		int r = rng.nextInt(6);
 		switch (r) {
-			case 0: return new TerminalOp(TerminalOp.terminal.a0);
-			case 1: return new TerminalOp(TerminalOp.terminal.a1);
-			case 2: return new TerminalOp(TerminalOp.terminal.d0);
-			case 3: return new TerminalOp(TerminalOp.terminal.d1);
-			case 4: return new TerminalOp(TerminalOp.terminal.d2);
-			case 5: return new TerminalOp(TerminalOp.terminal.d3);
+			case 0: return new TerminalOp("a0");
+			case 1: return new TerminalOp("a1");
+			case 2: return new TerminalOp("d0");
+			case 3: return new TerminalOp("d1");
+			case 4: return new TerminalOp("d2");
+			case 5: return new TerminalOp("d3");
 		}
 		return null;
 	}
