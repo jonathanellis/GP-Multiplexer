@@ -5,12 +5,12 @@ import java.util.Random;
 public class Multiplexer {
 	
 	private static int INIT_TREE_DEPTH = 4;
-	private static int MAX_TREE_DEPTH = 10;
+	private static int MAX_TREE_DEPTH = 15;
 	private static int POP_SIZE = 3000;
 	private static int MAX_EPOCHS = 100000;
 	private static double MUTATION_PROB = 0.15; // Probability of mutation
 	private static double CROSSOVER_PROB = 0.8; // Probability of crossover
-	private static int TOURNAMENT_SAMPLE_SIZE = 50;
+	private static int TOURNAMENT_SAMPLE_SIZE = 200;
 	private int order = 11;
 	
 	static Random rng = new Random();
@@ -91,18 +91,26 @@ public class Multiplexer {
 			int genBestFitness = -1;
 			ArrayList<Program> newPopulation = new ArrayList<Program>();
 			
+			// elitism:
+			Program bestProgram = null;
+			for (Program p : population) {
+				if (bestProgram == null) bestProgram = p;
+				if (p.fitness(fitnessCases) > bestProgram.fitness(fitnessCases)) bestProgram = p;
+			}
+			newPopulation.add(bestProgram);
+			
 			while (newPopulation.size() < POP_SIZE) { // this does sometimes allow population to grow too big by 1
 
 				if (rng.nextFloat() < CROSSOVER_PROB) { // crossover
 					Program parent = tournamentSelect(population, fitnessCases);
 					ArrayList<Program> offspring = parent.crossover(tournamentSelect(population, fitnessCases));
 					
-					ArrayList<Program> result = new ArrayList<Program>();
+					ArrayList<Program> mutated = new ArrayList<Program>();
 					for (Program p : offspring) {
-						if (rng.nextFloat() < MUTATION_PROB) result.add(p.mutate());
-						else result.add(p.mutate());
+						if (rng.nextFloat() < MUTATION_PROB) mutated.add(p.mutate());
+						else mutated.add(p.mutate());
 					}
-					newPopulation.addAll(result);
+					newPopulation.addAll(mutated);
 				} else { // simple copy
 					newPopulation.add(tournamentSelect(population, fitnessCases));
 				}

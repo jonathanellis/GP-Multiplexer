@@ -26,6 +26,7 @@ public class Program {
 	
 	// Computes fitness over all cases:
 	public int fitness() {
+		System.out.println("/!\\ WARNING: Full fitness() called!");
 		int fitness = 0;
 		int fitnessCases = (int) Math.pow(2, order);
 		for (int i=0; i<fitnessCases; i++) {
