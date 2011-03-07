@@ -13,6 +13,9 @@ public class Valuation {
 		} else if (order == 11) {
 			String n[] = {"a0", "a1", "a2", "d0", "d1", "d2", "d3", "d4", "d5", "d6", "d7"};
 			names = n;
+		} else if (order == 16) {
+			String n[] = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"};
+			names = n;
 		}
 		
 		int i = order-1;
@@ -26,6 +29,7 @@ public class Valuation {
 	public boolean correctOutput() {
 		if (order == 6) return sixMultiplexerCorrectOutput();
 		else if (order == 11) return elevenMultiplexerCorrectOutput();
+		else if (order == 16) return sixteenMiddleThreeCorrectOutput();
 		return false;
 	}
 	
@@ -53,6 +57,15 @@ public class Valuation {
 		}
 		if (values[1]) return values[5];
 		return values[3];
+	}
+	
+	private boolean sixteenMiddleThreeCorrectOutput() {
+		int sum = 0;
+		for (int i=0; i<values.length; i++) {
+			sum += values[i] ? 1 : 0;
+		}
+		if (sum >= 7 && sum <= 9) return true;
+		return false;
 	}
 
 	public void printValues() {

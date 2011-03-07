@@ -146,31 +146,38 @@ public class Circuit {
 		if (args.length == 0) {
 			System.out.println("ERROR: You didn't specify the mode you want to run. Valid options: 6multiplexer, 11multipler, 16middle3.");
 		} else {
-			Circuit mux = new Circuit();
+			Circuit c = new Circuit();
 			if (args[0].equals("6multiplexer")) {
-				mux.order = 6;
-				mux.popSize = 300;
-				mux.maxEpochs = 10000;
-				mux.mutationProb = 0.2;
-				mux.crossoverProb = 0.9;
-				mux.tournamentSampleSize = 30;
-				mux.fitnessCasesCount = 64;
-				mux.elitismEnabled = false;
+				c.order = 6;
+				c.popSize = 300;
+				c.maxEpochs = 10000;
+				c.mutationProb = 0.2;
+				c.crossoverProb = 0.9;
+				c.tournamentSampleSize = 30;
+				c.fitnessCasesCount = 64;
+				c.elitismEnabled = false;
 			} else if (args[0].equals("11multiplexer")) {
-				mux.order = 11;
-				mux.popSize = 3000;
-				mux.maxEpochs = 10000;
-				mux.mutationProb = 0.15;
-				mux.crossoverProb = 0.8;
-				mux.tournamentSampleSize = 150;
-				mux.fitnessCasesCount = 205;
-				mux.elitismEnabled = false;
+				c.order = 11;
+				c.popSize = 3000;
+				c.maxEpochs = 10000;
+				c.mutationProb = 0.15;
+				c.crossoverProb = 0.8;
+				c.tournamentSampleSize = 150;
+				c.fitnessCasesCount = 205;
+				c.elitismEnabled = false;
 			} else if (args[0].equals("16middle3")) {
-				// parameters for 16middle3
+				c.order = 16;
+				c.popSize = 3000;
+				c.maxEpochs = 10000;
+				c.mutationProb = 0.15;
+				c.crossoverProb = 0.8;
+				c.tournamentSampleSize = 150;
+				c.fitnessCasesCount = 655;
+				c.elitismEnabled = true;
 			} else {
 				System.out.println("ERROR: Invalid option. Valid options: 6multiplexer, 11multiplexer, 16middle3.");
 			}
-			mux.evolve();
+			c.evolve();
 		//	System.out.println(mux.computeFitness(mux.correctSolution()));
 
 		}

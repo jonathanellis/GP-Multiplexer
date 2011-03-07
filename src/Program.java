@@ -3,7 +3,7 @@ import java.util.Random;
 
 public class Program {
 	private static int INIT_TREE_DEPTH = 3;
-	private static int MAX_TREE_DEPTH = 10;
+	private static int MAX_TREE_DEPTH = 15;
 	
 	public Operator tree;
 	private int order;
