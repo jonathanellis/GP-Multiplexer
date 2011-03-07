@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class Program {
+	private static int INIT_TREE_DEPTH = 3;
 	private static int MAX_TREE_DEPTH = 10;
 	
 	public Operator tree;
@@ -9,12 +10,12 @@ public class Program {
 	
 	// Cache fitness and the fitnessCases it covers:
 	private int fitness = 0;
-	private ArrayList<Integer> fitnessCases;
+	private ArrayList<Integer> fitnessCases = null;
 	
 	// Generate random program:
 	public Program(int order) {
 		this.order = order;
-		this.tree = generateRandomTree(6); // tree depth
+		this.tree = generateRandomTree(INIT_TREE_DEPTH); // tree depth
 		
 	}
 	
@@ -36,6 +37,10 @@ public class Program {
 			
 			if (actualOutput == correctOutput) fitness++;
 		}
+		
+		this.fitness = fitness;
+		this.fitnessCases = null;
+		
 		return fitness;
 	}
 	
@@ -59,17 +64,15 @@ public class Program {
 	}
 	
 	private Operator generateRandomTree(int depth) {
-		Operator root;
 		Random rng = new Random();
-		
 		int r = rng.nextInt(4);
+		Operator root;
 		if (r == 0) root =  new AndOp(order);
 		else if (r == 1) root = new OrOp(order);
 		else if (r == 2) root = new NotOp(order);
 		else root = new IfOp(order);
 		
 		root.grow(depth-1);
-			
 		return root;
 	}
 	
@@ -83,17 +86,17 @@ public class Program {
 			
 			ArrayList<Operator> mCandidates;
 			ArrayList<Operator> mNonTerminals = treeCopy.nonTerminalsToList();
-			if (Multiplexer.rng.nextFloat() < 0.9 && mNonTerminals.size() > 0) mCandidates = mNonTerminals;
+			if (Circuit.rng.nextFloat() < 0.9 && mNonTerminals.size() > 0) mCandidates = mNonTerminals;
 			else mCandidates = treeCopy.terminalsToList();
 			
-			Operator mOp = Multiplexer.randomSelect(mCandidates);
+			Operator mOp = Circuit.randomSelect(mCandidates);
 			
 			ArrayList<Operator> fCandidates;
 			ArrayList<Operator> fNonTerminals = spouseCopy.nonTerminalsToList();
-			if (Multiplexer.rng.nextFloat() < 0.9 && fNonTerminals.size() > 0) fCandidates = fNonTerminals;
+			if (Circuit.rng.nextFloat() < 0.9 && fNonTerminals.size() > 0) fCandidates = fNonTerminals;
 			else fCandidates = spouseCopy.terminalsToList();
 			
-			Operator fOp = Multiplexer.randomSelect(fCandidates);
+			Operator fOp = Circuit.randomSelect(fCandidates);
 			
 			if (fOp == spouseCopy) spouseCopy = mOp.clone();
 			else spouseCopy.swapSubtree(fOp, mOp.clone());
@@ -114,8 +117,8 @@ public class Program {
 			treeCopy = tree.clone();
 			ArrayList<Operator> candidates = treeCopy.nonTerminalsToList();
 			candidates.addAll(treeCopy.terminalsToList());
-			Operator p = Multiplexer.randomSelect(candidates);
-			int treeHeight = Multiplexer.rng.nextInt(4)+1;
+			Operator p = Circuit.randomSelect(candidates);
+			int treeHeight = Circuit.rng.nextInt(4)+1;
 			Operator newTree = generateRandomTree(treeHeight);
 			treeCopy.swapSubtree(p, newTree);
 		} while (treeCopy.treeMaxHeight() > MAX_TREE_DEPTH);

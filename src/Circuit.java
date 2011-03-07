@@ -2,26 +2,23 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
 
-public class Multiplexer {
+public class Circuit {
 	
-	private static int INIT_TREE_DEPTH = 4;
-	private static int MAX_TREE_DEPTH = 15;
-	private static int POP_SIZE = 3000;
-	private static int MAX_EPOCHS = 100000;
-	private static double MUTATION_PROB = 0.15; // Probability of mutation
-	private static double CROSSOVER_PROB = 0.8; // Probability of crossover
-	private static int TOURNAMENT_SAMPLE_SIZE = 200;
-	private int order = 11;
+	private int popSize; // Size of the population (remains constant)
+	private int maxEpochs; // Maximum number of generations until the program should terminate
+	private double mutationProb; // Probability of mutation
+	private double crossoverProb; // Probability of crossover
+	private int tournamentSampleSize; // Size of the sample used in tournament selection
+	private int fitnessCasesCount; // Number of fitness cases to apply (for efficiency, this is a supet of 2^order)
+	private int order; // Order of the multiplexer
+	private boolean elitismEnabled;
 	
 	static Random rng = new Random();
 	
-	public Multiplexer(int order) {
-		this.order = order;
-	}
 	
 	public static <T> T randomSelect(ArrayList<T> population) {
 		int r = rng.nextInt(population.size());
-		return (T) population.get(r);
+		return population.get(r);
 	}
 	
 	// random sample without replacement (unique):
@@ -32,24 +29,20 @@ public class Multiplexer {
 		
 		for (int i=0; i<sampleSize; i++) {
 			int r = rng.nextInt(populationCopy.size());
-			Object o = populationCopy.get(r);
+			T o = populationCopy.get(r);
 			populationCopy.remove(r);
-			sample.add((T) o);
+			sample.add(o);
 		}
 		return sample;
 	}
 	
 	public Program tournamentSelect(ArrayList<Program> population, ArrayList<Integer> fitnessCases) {
 		Program best = null;
-		int bestFitness = -1;
 
-		ArrayList<Program> sample = randomSample(population, TOURNAMENT_SAMPLE_SIZE);
+		ArrayList<Program> sample = randomSample(population, tournamentSampleSize);
 		for (Program p : sample) {
-			int f = p.fitness(fitnessCases);
-			if (f > bestFitness) {
-				best = p;
-				bestFitness = f;
-			}
+			if (best == null) best = p;
+			if (p.fitness(fitnessCases) > best.fitness(fitnessCases)) best = p;
 		}
 		return best;
 	}
@@ -82,33 +75,36 @@ public class Multiplexer {
 	
 	public void evolve() {
 		// generate initial population
-		ArrayList<Program> population = generatePopulation(POP_SIZE);
+		ArrayList<Program> population = generatePopulation(popSize);
 
 		int bestFitness = -1;
 		
-		for (int g=0; g<MAX_EPOCHS; g++) {
-			ArrayList<Integer> fitnessCases = generateFitnessCases(2048, 205);
+		for (int g=0; g<maxEpochs; g++) {
+			ArrayList<Integer> fitnessCases = generateFitnessCases((int) Math.pow(2, order), fitnessCasesCount);
+
 			int genBestFitness = -1;
 			ArrayList<Program> newPopulation = new ArrayList<Program>();
 			
-			// elitism:
-			Program bestProgram = null;
-			for (Program p : population) {
-				if (bestProgram == null) bestProgram = p;
-				if (p.fitness(fitnessCases) > bestProgram.fitness(fitnessCases)) bestProgram = p;
+			// Elitism:
+			if (elitismEnabled) {
+				Program bestProgram = null;
+				for (Program p : population) {
+					if (bestProgram == null) bestProgram = p;
+					if (p.fitness(fitnessCases) > bestProgram.fitness(fitnessCases)) bestProgram = p;
+				}
+				newPopulation.add(bestProgram);
 			}
-			newPopulation.add(bestProgram);
 			
-			while (newPopulation.size() < POP_SIZE) { // this does sometimes allow population to grow too big by 1
+			while (newPopulation.size() < popSize) { // this does sometimes allow population to grow too big by 1
 
-				if (rng.nextFloat() < CROSSOVER_PROB) { // crossover
+				if (rng.nextFloat() < crossoverProb) { // crossover
 					Program parent = tournamentSelect(population, fitnessCases);
 					ArrayList<Program> offspring = parent.crossover(tournamentSelect(population, fitnessCases));
 					
 					ArrayList<Program> mutated = new ArrayList<Program>();
 					for (Program p : offspring) {
-						if (rng.nextFloat() < MUTATION_PROB) mutated.add(p.mutate());
-						else mutated.add(p.mutate());
+						if (rng.nextFloat() < mutationProb) mutated.add(p.mutate());
+						else mutated.add(p);
 					}
 					newPopulation.addAll(mutated);
 				} else { // simple copy
@@ -119,9 +115,12 @@ public class Multiplexer {
 			for (Program p : newPopulation) {
 				int f = p.fitness(fitnessCases);
 				if (f == fitnessCases.size()) {
-					System.out.println("CANDIDATE OPTIMUM FOUND: " + p.fitness());
-					System.out.println(p.tree.mathematicaNotation());
-					System.out.println(p.tree.treeMaxHeight());
+					int fullFitness = p.fitness();
+					if (fullFitness == Math.pow(2, order)) {
+						System.out.println(p.tree.mathematicaNotation());
+						System.out.println(p.tree.treeMaxHeight());
+						System.exit(0);
+					}
 				}
 				if (f > bestFitness) bestFitness = f;
 				if (f > genBestFitness) genBestFitness = f;
@@ -144,9 +143,37 @@ public class Multiplexer {
 	}
 	
 	public static void main(String[] args) {
-		Multiplexer mux = new Multiplexer(11);
-		mux.evolve();
-	//	System.out.println(mux.computeFitness(mux.correctSolution()));
+		if (args.length == 0) {
+			System.out.println("ERROR: You didn't specify the mode you want to run. Valid options: 6multiplexer, 11multipler, 16middle3.");
+		} else {
+			Circuit mux = new Circuit();
+			if (args[0].equals("6multiplexer")) {
+				mux.order = 6;
+				mux.popSize = 300;
+				mux.maxEpochs = 10000;
+				mux.mutationProb = 0.2;
+				mux.crossoverProb = 0.9;
+				mux.tournamentSampleSize = 30;
+				mux.fitnessCasesCount = 64;
+				mux.elitismEnabled = false;
+			} else if (args[0].equals("11multiplexer")) {
+				mux.order = 11;
+				mux.popSize = 3000;
+				mux.maxEpochs = 10000;
+				mux.mutationProb = 0.15;
+				mux.crossoverProb = 0.8;
+				mux.tournamentSampleSize = 150;
+				mux.fitnessCasesCount = 205;
+				mux.elitismEnabled = false;
+			} else if (args[0].equals("16middle3")) {
+				// parameters for 16middle3
+			} else {
+				System.out.println("ERROR: Invalid option. Valid options: 6multiplexer, 11multiplexer, 16middle3.");
+			}
+			mux.evolve();
+		//	System.out.println(mux.computeFitness(mux.correctSolution()));
+
+		}
 	}
 	
 }
