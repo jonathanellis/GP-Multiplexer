@@ -1,16 +1,16 @@
 import java.util.ArrayList;
 
 
-public class IfOp extends Operator {
-	private Operator x;
-	private Operator y;
-	private Operator z;
+public class IfNode extends Node {
+	private Node x;
+	private Node y;
+	private Node z;
 	
-	public IfOp(int multiplexerOrder) {
+	public IfNode(int multiplexerOrder) {
 		super(multiplexerOrder);
 	}
 	
-	public IfOp(int multiplexerOrder, Operator x, Operator y, Operator z) {
+	public IfNode(int multiplexerOrder, Node x, Node y, Node z) {
 		super(multiplexerOrder);
 		this.x = x;
 		this.y = y;
@@ -33,10 +33,10 @@ public class IfOp extends Operator {
 		}
 	}
 	
-	public ArrayList<Operator> nonTerminalsToList() {
-		ArrayList<Operator> xChildren = x.nonTerminalsToList();
-		ArrayList<Operator> yChildren = y.nonTerminalsToList();
-		ArrayList<Operator> zChildren = z.nonTerminalsToList();
+	public ArrayList<Node> nonTerminalsToList() {
+		ArrayList<Node> xChildren = x.nonTerminalsToList();
+		ArrayList<Node> yChildren = y.nonTerminalsToList();
+		ArrayList<Node> zChildren = z.nonTerminalsToList();
 		
 		xChildren.addAll(yChildren);
 		xChildren.addAll(zChildren);
@@ -44,16 +44,16 @@ public class IfOp extends Operator {
 		return xChildren;
 	}
 	
-	public ArrayList<Operator> terminalsToList() {
-		ArrayList<Operator> xTerminals = x.terminalsToList();
-		ArrayList<Operator> yTerminals = y.terminalsToList();
-		ArrayList<Operator> zTerminals = z.terminalsToList();
+	public ArrayList<Node> terminalsToList() {
+		ArrayList<Node> xTerminals = x.terminalsToList();
+		ArrayList<Node> yTerminals = y.terminalsToList();
+		ArrayList<Node> zTerminals = z.terminalsToList();
 		xTerminals.addAll(yTerminals);
 		xTerminals.addAll(zTerminals);
 		return xTerminals;
 	}
 	
-	public void swapSubtree(Operator o, Operator n) {
+	public void swapSubtree(Node o, Node n) {
 		if (x == o) x = n;
 		else if (y == o) y = n;
 		else if (z == o) z = n;
@@ -65,20 +65,32 @@ public class IfOp extends Operator {
 	}
 	
 	
-	public Operator clone() {
-		IfOp o = new IfOp(order, x.clone(), y.clone(), z.clone());
+	public Node clone() {
+		IfNode o = new IfNode(order, x.clone(), y.clone(), z.clone());
 		return o;
 		
 	}
 	
-	public int treeMaxHeight() {
-		int xHeight = x.treeMaxHeight();
-		int yHeight = y.treeMaxHeight();
-		int zHeight = z.treeMaxHeight();
+	public int treeHeight() {
+		int xHeight = x.treeHeight();
+		int yHeight = y.treeHeight();
+		int zHeight = z.treeHeight();
 		if ((xHeight > yHeight) && (xHeight > zHeight)) return 1+xHeight;
 		if (yHeight > zHeight) return 1+yHeight;
 		return 1+zHeight;
 	}
+	
+	public int treeHeight(Node o) {
+		if (this == o) return 1;
+		int xHeight = x.treeHeight(o);
+		if (xHeight > 0) return 1+xHeight;
+		int yHeight = y.treeHeight(o);
+		if (yHeight > 0) return 1+yHeight;
+		int zHeight = z.treeHeight(o);
+		if (zHeight > 0) return 1+zHeight;
+		return 0;
+	}
+	
 	
 	public String toString() {
 		return "(" + x + " ? " + y + " : " + z + ")";

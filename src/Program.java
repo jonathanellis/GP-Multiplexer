@@ -3,9 +3,9 @@ import java.util.Random;
 
 public class Program {
 	private static int INIT_TREE_DEPTH = 3;
-	private static int MAX_TREE_DEPTH = 15;
+	private static int MAX_TREE_DEPTH = 4;
 	
-	public Operator tree;
+	public Node tree;
 	private int order;
 	
 	// Cache fitness and the fitnessCases it covers:
@@ -16,11 +16,10 @@ public class Program {
 	public Program(int order) {
 		this.order = order;
 		this.tree = generateRandomTree(INIT_TREE_DEPTH); // tree depth
-		
 	}
 	
 	// Generate program based on tree:
-	public Program(Operator tree, int order) {
+	public Program(Node tree, int order) {
 		this.tree = tree;
 		this.order = order;
 	}
@@ -47,7 +46,7 @@ public class Program {
 	// Computes fitness over the specified fitness cases:
 	public int fitness(ArrayList<Integer> fitnessCases) {
 		if (this.fitnessCases == fitnessCases) return fitness; // cache hit
-		
+
 		int fitness = 0;
 		for (int c : fitnessCases) {
 			Valuation v = new Valuation(c, order);
@@ -59,51 +58,52 @@ public class Program {
 		// cache these values:
 		this.fitness = fitness;
 		this.fitnessCases = fitnessCases;
-		
 		return fitness;
 	}
 	
-	private Operator generateRandomTree(int depth) {
+	private Node generateRandomTree(int depth) {
 		Random rng = new Random();
 		int r = rng.nextInt(4);
-		Operator root;
-		if (r == 0) root =  new AndOp(order);
-		else if (r == 1) root = new OrOp(order);
-		else if (r == 2) root = new NotOp(order);
-		else root = new IfOp(order);
+		Node root;
+		if (r == 0) root =  new AndNode(order);
+		else if (r == 1) root = new OrNode(order);
+		else if (r == 2) root = new NotNode(order);
+		else root = new IfNode(order);
 		
 		root.grow(depth-1);
 		return root;
 	}
 	
 	public ArrayList<Program> crossover(Program spouse) {
-		Operator treeCopy;
-		Operator spouseCopy;
+		Node treeCopy;
+		Node spouseCopy;
 		
 		do {
+			// Copy this tree and spouse:
 			treeCopy = tree.clone();
 			spouseCopy = spouse.tree.clone();
 			
-			ArrayList<Operator> mCandidates;
-			ArrayList<Operator> mNonTerminals = treeCopy.nonTerminalsToList();
+			ArrayList<Node> mCandidates;
+			ArrayList<Node> mNonTerminals = treeCopy.nonTerminalsToList();
 			if (Circuit.rng.nextFloat() < 0.9 && mNonTerminals.size() > 0) mCandidates = mNonTerminals;
 			else mCandidates = treeCopy.terminalsToList();
 			
-			Operator mOp = Circuit.randomSelect(mCandidates);
+			Node mOp = Circuit.randomSelect(mCandidates);
 			
-			ArrayList<Operator> fCandidates;
-			ArrayList<Operator> fNonTerminals = spouseCopy.nonTerminalsToList();
+			ArrayList<Node> fCandidates;
+			ArrayList<Node> fNonTerminals = spouseCopy.nonTerminalsToList();
 			if (Circuit.rng.nextFloat() < 0.9 && fNonTerminals.size() > 0) fCandidates = fNonTerminals;
 			else fCandidates = spouseCopy.terminalsToList();
 			
-			Operator fOp = Circuit.randomSelect(fCandidates);
-			
+			Node fOp = Circuit.randomSelect(fCandidates);
+						
 			if (fOp == spouseCopy) spouseCopy = mOp.clone();
 			else spouseCopy.swapSubtree(fOp, mOp.clone());
 			
 			if (mOp == treeCopy) treeCopy = fOp.clone();
 			else treeCopy.swapSubtree(mOp, fOp.clone());
-		} while (treeCopy.treeMaxHeight() > MAX_TREE_DEPTH || spouseCopy.treeMaxHeight() > MAX_TREE_DEPTH);
+			
+		} while (treeCopy.treeHeight() > MAX_TREE_DEPTH || spouseCopy.treeHeight() > MAX_TREE_DEPTH);
 		
 		ArrayList<Program> offspring = new ArrayList<Program>();
 		offspring.add(new Program(treeCopy, order));
@@ -112,16 +112,16 @@ public class Program {
 	}
 	
 	public Program mutate() {
-		Operator treeCopy;
+		Node treeCopy;
 		do {
 			treeCopy = tree.clone();
-			ArrayList<Operator> candidates = treeCopy.nonTerminalsToList();
+			ArrayList<Node> candidates = treeCopy.nonTerminalsToList();
 			candidates.addAll(treeCopy.terminalsToList());
-			Operator p = Circuit.randomSelect(candidates);
-			int treeHeight = Circuit.rng.nextInt(4)+1;
-			Operator newTree = generateRandomTree(treeHeight);
+			Node p = Circuit.randomSelect(candidates);
+			int treeHeight = Circuit.rng.nextInt(INIT_TREE_DEPTH+1)+1;
+			Node newTree = generateRandomTree(treeHeight);
 			treeCopy.swapSubtree(p, newTree);
-		} while (treeCopy.treeMaxHeight() > MAX_TREE_DEPTH);
+		} while (treeCopy.treeHeight() > MAX_TREE_DEPTH);
 		return new Program(treeCopy, order);
 	}
 	

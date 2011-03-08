@@ -1,17 +1,16 @@
 import java.util.ArrayList;
 
 
-public class OrOp extends Operator {
-	int multiplexerOrder;
-	private Operator x;
-	private Operator y;
+public class OrNode extends Node {
+	private Node x;
+	private Node y;
 	
-	public OrOp(int multiplexerOrder) {
-		super(multiplexerOrder);
+	public OrNode(int order) {
+		super(order);
 	}
 	
-	public OrOp(int multiplexerOrder, Operator x, Operator y) {
-		super(multiplexerOrder);
+	public OrNode(int order, Node x, Node y) {
+		super(order);
 		this.x = x;
 		this.y = y;
 	}
@@ -30,31 +29,41 @@ public class OrOp extends Operator {
 		}
 	}
 	
-	public int treeMaxHeight() {
-		int xHeight = x.treeMaxHeight();
-		int yHeight = y.treeMaxHeight();
+	public int treeHeight() {
+		int xHeight = x.treeHeight();
+		int yHeight = y.treeHeight();
 		if (xHeight > yHeight) return 1+xHeight;
 		return 1+yHeight;
 	}
 	
-	public ArrayList<Operator> nonTerminalsToList() {
-		ArrayList<Operator> xChildren = x.nonTerminalsToList();
-		ArrayList<Operator> yChildren = y.nonTerminalsToList();
+	public int treeHeight(Node o) {
+		if (this == o) return 1;
+		int xHeight = x.treeHeight(o);
+		if (xHeight > 0) return 1+xHeight;
+		int yHeight = y.treeHeight(o);
+		if (yHeight > 0) return 1+yHeight;
+		return 0;
+	}
+	
+	
+	public ArrayList<Node> nonTerminalsToList() {
+		ArrayList<Node> xChildren = x.nonTerminalsToList();
+		ArrayList<Node> yChildren = y.nonTerminalsToList();
 		
 		xChildren.addAll(yChildren);
 		xChildren.add(this);
 		return xChildren;
 	}
 	
-	public ArrayList<Operator> terminalsToList() {
-		ArrayList<Operator> xTerminals = x.terminalsToList();
-		ArrayList<Operator> yTerminals = y.terminalsToList();
+	public ArrayList<Node> terminalsToList() {
+		ArrayList<Node> xTerminals = x.terminalsToList();
+		ArrayList<Node> yTerminals = y.terminalsToList();
 		xTerminals.addAll(yTerminals);
 		return xTerminals;
 	}
 	
 	
-	public void swapSubtree(Operator o, Operator n) {
+	public void swapSubtree(Node o, Node n) {
 		if (x == o) x = n;
 		else if (y == o) y = n;
 		else {
@@ -63,8 +72,8 @@ public class OrOp extends Operator {
 		}
 	}
 	
-	public Operator clone() {
-		OrOp o = new OrOp(order, x.clone(), y.clone());
+	public Node clone() {
+		OrNode o = new OrNode(order, x.clone(), y.clone());
 		return o;
 	}
 	

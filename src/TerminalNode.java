@@ -1,11 +1,11 @@
 import java.util.ArrayList;
 
 
-public class TerminalOp extends Operator {
+public class TerminalNode extends Node {
 	private String t;
 	
 	// Generates a random terminal, based on the specified range:
-	public TerminalOp(int multiplexerOrder) {
+	public TerminalNode(int multiplexerOrder) {
 		super(multiplexerOrder);
 		
 		int r = rng.nextInt(multiplexerOrder);
@@ -26,7 +26,7 @@ public class TerminalOp extends Operator {
 		}
 	}
 	
-	public TerminalOp(int multiplexerOrder, String t) {
+	public TerminalNode(int multiplexerOrder, String t) {
 		super(multiplexerOrder);
 		this.t = t;
 	}
@@ -36,12 +36,12 @@ public class TerminalOp extends Operator {
 		return v.valueForTerminal(t);
 	}
 	
-	public ArrayList<Operator> nonTerminalsToList() {
-		return new ArrayList<Operator>();
+	public ArrayList<Node> nonTerminalsToList() {
+		return new ArrayList<Node>();
 	}
 	
-	public ArrayList<Operator> terminalsToList() {
-		ArrayList<Operator> list = new ArrayList<Operator>();
+	public ArrayList<Node> terminalsToList() {
+		ArrayList<Node> list = new ArrayList<Node>();
 		list.add(this);
 		return list;
 	}
@@ -50,16 +50,21 @@ public class TerminalOp extends Operator {
 		// do nothing
 	}
 	
-	public void swapSubtree(Operator o, Operator n) {
+	public void swapSubtree(Node o, Node n) {
 		// do nothing
 	}
 	// never used in practice:
-	public Operator clone() {
-		return new TerminalOp(order, this.t);
+	public Node clone() {
+		return new TerminalNode(order, this.t);
 	}
 	
-	public int treeMaxHeight() {
+	public int treeHeight() {
 		return 1;
+	}
+	
+	public int treeHeight(Node o) {
+		if (this == o) return 1;
+		return 0;
 	}
 	
 	public String toString() {

@@ -118,7 +118,7 @@ public class Circuit {
 					int fullFitness = p.fitness();
 					if (fullFitness == Math.pow(2, order)) {
 						System.out.println(p.tree.mathematicaNotation());
-						System.out.println(p.tree.treeMaxHeight());
+						System.out.println(p.tree.treeHeight());
 						System.exit(0);
 					}
 				}
@@ -132,7 +132,7 @@ public class Circuit {
 		
 	}
 	
-	private Operator correctSolution() {
+	private Node correctSolution() {
 		// (IF Al (IF A0 D3 D2) (IF A0 D1 D0))
 		
 	/*	IfOp a = new IfOp(new TerminalOp("a0"), new TerminalOp("d3"), new TerminalOp("d2"));
@@ -152,10 +152,10 @@ public class Circuit {
 				c.popSize = 300;
 				c.maxEpochs = 10000;
 				c.mutationProb = 0.2;
-				c.crossoverProb = 0.9;
+				c.crossoverProb = 0.8;
 				c.tournamentSampleSize = 30;
 				c.fitnessCasesCount = 64;
-				c.elitismEnabled = false;
+				c.elitismEnabled = true;
 			} else if (args[0].equals("11multiplexer")) {
 				c.order = 11;
 				c.popSize = 3000;
@@ -167,12 +167,12 @@ public class Circuit {
 				c.elitismEnabled = false;
 			} else if (args[0].equals("16middle3")) {
 				c.order = 16;
-				c.popSize = 3000;
+				c.popSize = 6000;
 				c.maxEpochs = 10000;
 				c.mutationProb = 0.15;
 				c.crossoverProb = 0.8;
 				c.tournamentSampleSize = 150;
-				c.fitnessCasesCount = 655;
+				c.fitnessCasesCount = 300;
 				c.elitismEnabled = true;
 			} else {
 				System.out.println("ERROR: Invalid option. Valid options: 6multiplexer, 11multiplexer, 16middle3.");

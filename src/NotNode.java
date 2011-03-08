@@ -1,14 +1,14 @@
 import java.util.ArrayList;
 
 
-public class NotOp extends Operator {
-	private Operator x;
+public class NotNode extends Node {
+	private Node x;
 	
-	public NotOp(int multiplexerOrder) {
+	public NotNode(int multiplexerOrder) {
 		super(multiplexerOrder);
 	}
 	
-	public NotOp(int multiplexerOrder, Operator x) {
+	public NotNode(int multiplexerOrder, Node x) {
 		super(multiplexerOrder);
 		this.x = x;
 	}
@@ -23,28 +23,35 @@ public class NotOp extends Operator {
 	}
 	
 	
-	public ArrayList<Operator> nonTerminalsToList() {
-		ArrayList<Operator> xChildren = x.nonTerminalsToList();
+	public ArrayList<Node> nonTerminalsToList() {
+		ArrayList<Node> xChildren = x.nonTerminalsToList();
 		xChildren.add(this);
 		return xChildren;
 	}
 	
-	public ArrayList<Operator> terminalsToList() {
+	public ArrayList<Node> terminalsToList() {
 		return x.terminalsToList();
 	}
 	
-	public void swapSubtree(Operator o, Operator n) {
+	public void swapSubtree(Node o, Node n) {
 		if (x == o) x = n;
 		else x.swapSubtree(o, n);
 	}
-	public Operator clone() {
-		NotOp o = new NotOp(order, x.clone());
+	public Node clone() {
+		NotNode o = new NotNode(order, x.clone());
 		return o;
 		
 	}
 	
-	public int treeMaxHeight() {
-		return 1+x.treeMaxHeight();
+	public int treeHeight() {
+		return 1+x.treeHeight();
+	}
+	
+	public int treeHeight(Node o) {
+		if (this == o) return 1;
+		int xHeight = x.treeHeight(o);
+		if (xHeight > 0) return 1+xHeight;
+		return 0;
 	}
 	
 	public String toString() {
