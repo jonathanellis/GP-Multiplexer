@@ -6,12 +6,15 @@ public class Circuit {
 	
 	private int popSize; // Size of the population (remains constant)
 	private int maxEpochs; // Maximum number of generations until the program should terminate
+	public int initTreeDepth;
+	public int maxTreeDepth;
 	private double mutationProb; // Probability of mutation
 	private double crossoverProb; // Probability of crossover
 	private int tournamentSampleSize; // Size of the sample used in tournament selection
 	private int fitnessCasesCount; // Number of fitness cases to apply (for efficiency, this is a supet of 2^order)
-	private int order; // Order of the multiplexer
+	public int order; // Order of the multiplexer
 	private boolean elitismEnabled;
+
 	
 	static Random rng = new Random();
 	
@@ -69,7 +72,7 @@ public class Circuit {
 	
 	private ArrayList<Program> generatePopulation(int size) {
 		ArrayList<Program> population = new ArrayList<Program>();
-		for (int i=0; i<size; i++) population.add(new Program(order));
+		for (int i=0; i<size; i++) population.add(new Program(this));
 		return population;
 	}
 	
@@ -77,22 +80,22 @@ public class Circuit {
 		// generate initial population
 		ArrayList<Program> population = generatePopulation(popSize);
 
-		int bestFitness = -1;
+		Program bestProgram = null;
 		
 		for (int g=0; g<maxEpochs; g++) {
 			ArrayList<Integer> fitnessCases = generateFitnessCases((int) Math.pow(2, order), fitnessCasesCount);
 
-			int genBestFitness = -1;
+
 			ArrayList<Program> newPopulation = new ArrayList<Program>();
 			
 			// Elitism:
 			if (elitismEnabled) {
-				Program bestProgram = null;
+				Program prevBestProgram = null;
 				for (Program p : population) {
-					if (bestProgram == null) bestProgram = p;
-					if (p.fitness(fitnessCases) > bestProgram.fitness(fitnessCases)) bestProgram = p;
+					if (prevBestProgram == null) prevBestProgram = p;
+					if (p.fitness(fitnessCases) > prevBestProgram.fitness(fitnessCases)) prevBestProgram = p;
 				}
-				newPopulation.add(bestProgram);
+				newPopulation.add(prevBestProgram);
 			}
 			
 			while (newPopulation.size() < popSize) { // this does sometimes allow population to grow too big by 1
@@ -112,7 +115,9 @@ public class Circuit {
 				}
 			}
 			
+			Program genBestProgram = null;
 			for (Program p : newPopulation) {
+				
 				int f = p.fitness(fitnessCases);
 				if (f == fitnessCases.size()) {
 					int fullFitness = p.fitness();
@@ -122,12 +127,15 @@ public class Circuit {
 						System.exit(0);
 					}
 				}
-				if (f > bestFitness) bestFitness = f;
-				if (f > genBestFitness) genBestFitness = f;
+				if (bestProgram == null) bestProgram = p;
+				if (genBestProgram == null) genBestProgram = p;
+				
+				if (f > bestProgram.fitness(fitnessCases)) bestProgram = p;
+				if (f > genBestProgram.fitness(fitnessCases)) genBestProgram = p;
 			}
 		
 			population  = newPopulation;
-			System.out.println(g + "> " + bestFitness);
+			System.out.println(g + "> " + genBestProgram.fitness(fitnessCases) + "\t\t" + genBestProgram.tree);
 		}
 		
 	}
@@ -151,15 +159,19 @@ public class Circuit {
 				c.order = 6;
 				c.popSize = 300;
 				c.maxEpochs = 10000;
-				c.mutationProb = 0.2;
+				c.initTreeDepth = 3;
+				c.maxTreeDepth = 8;
+				c.mutationProb = 0.15;
 				c.crossoverProb = 0.8;
-				c.tournamentSampleSize = 30;
+				c.tournamentSampleSize = 50;
 				c.fitnessCasesCount = 64;
-				c.elitismEnabled = true;
+				c.elitismEnabled = false;
 			} else if (args[0].equals("11multiplexer")) {
 				c.order = 11;
 				c.popSize = 3000;
 				c.maxEpochs = 10000;
+				c.initTreeDepth = 4;
+				c.maxTreeDepth = 9;
 				c.mutationProb = 0.15;
 				c.crossoverProb = 0.8;
 				c.tournamentSampleSize = 150;
@@ -169,6 +181,8 @@ public class Circuit {
 				c.order = 16;
 				c.popSize = 6000;
 				c.maxEpochs = 10000;
+				c.initTreeDepth = 5;
+				c.maxTreeDepth = 15;
 				c.mutationProb = 0.15;
 				c.crossoverProb = 0.8;
 				c.tournamentSampleSize = 150;

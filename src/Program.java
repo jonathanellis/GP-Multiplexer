@@ -2,35 +2,33 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class Program {
-	private static int INIT_TREE_DEPTH = 3;
-	private static int MAX_TREE_DEPTH = 4;
-	
+
+	private Circuit circuit;
 	public Node tree;
-	private int order;
-	
+
 	// Cache fitness and the fitnessCases it covers:
 	private int fitness = 0;
 	private ArrayList<Integer> fitnessCases = null;
 	
 	// Generate random program:
-	public Program(int order) {
-		this.order = order;
-		this.tree = generateRandomTree(INIT_TREE_DEPTH); // tree depth
+	public Program(Circuit c) {
+		this.circuit = c;
+		this.tree = generateRandomTree(circuit.initTreeDepth); // tree depth
 	}
 	
 	// Generate program based on tree:
-	public Program(Node tree, int order) {
+	public Program(Circuit c, Node tree) {
+		this.circuit = c;
 		this.tree = tree;
-		this.order = order;
 	}
 	
 	// Computes fitness over all cases:
 	public int fitness() {
 		System.out.println("/!\\ WARNING: Full fitness() called!");
 		int fitness = 0;
-		int fitnessCases = (int) Math.pow(2, order);
+		int fitnessCases = (int) Math.pow(2, circuit.order);
 		for (int i=0; i<fitnessCases; i++) {
-			Valuation v = new Valuation(i, order);
+			Valuation v = new Valuation(i, circuit.order);
 			boolean actualOutput = tree.evaluate(v);
 			boolean correctOutput = v.correctOutput();
 			
@@ -49,7 +47,7 @@ public class Program {
 
 		int fitness = 0;
 		for (int c : fitnessCases) {
-			Valuation v = new Valuation(c, order);
+			Valuation v = new Valuation(c, circuit.order);
 			boolean actualOutput = tree.evaluate(v);
 			boolean correctOutput = v.correctOutput();
 			
@@ -65,10 +63,10 @@ public class Program {
 		Random rng = new Random();
 		int r = rng.nextInt(4);
 		Node root;
-		if (r == 0) root =  new AndNode(order);
-		else if (r == 1) root = new OrNode(order);
-		else if (r == 2) root = new NotNode(order);
-		else root = new IfNode(order);
+		if (r == 0) root =  new AndNode(circuit.order);
+		else if (r == 1) root = new OrNode(circuit.order);
+		else if (r == 2) root = new NotNode(circuit.order);
+		else root = new IfNode(circuit.order);
 		
 		root.grow(depth-1);
 		return root;
@@ -103,11 +101,11 @@ public class Program {
 			if (mOp == treeCopy) treeCopy = fOp.clone();
 			else treeCopy.swapSubtree(mOp, fOp.clone());
 			
-		} while (treeCopy.treeHeight() > MAX_TREE_DEPTH || spouseCopy.treeHeight() > MAX_TREE_DEPTH);
+		} while (treeCopy.treeHeight() > circuit.maxTreeDepth || spouseCopy.treeHeight() > circuit.maxTreeDepth);
 		
 		ArrayList<Program> offspring = new ArrayList<Program>();
-		offspring.add(new Program(treeCopy, order));
-		offspring.add(new Program(spouseCopy, order));
+		offspring.add(new Program(circuit, treeCopy));
+		offspring.add(new Program(circuit, treeCopy));
 		return offspring;
 	}
 	
@@ -118,11 +116,11 @@ public class Program {
 			ArrayList<Node> candidates = treeCopy.nonTerminalsToList();
 			candidates.addAll(treeCopy.terminalsToList());
 			Node p = Circuit.randomSelect(candidates);
-			int treeHeight = Circuit.rng.nextInt(INIT_TREE_DEPTH+1)+1;
+			int treeHeight = Circuit.rng.nextInt(circuit.initTreeDepth+1)+1;
 			Node newTree = generateRandomTree(treeHeight);
 			treeCopy.swapSubtree(p, newTree);
-		} while (treeCopy.treeHeight() > MAX_TREE_DEPTH);
-		return new Program(treeCopy, order);
+		} while (treeCopy.treeHeight() > circuit.maxTreeDepth);
+		return new Program(circuit, treeCopy);
 	}
 	
 }
