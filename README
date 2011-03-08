@@ -4,10 +4,13 @@ README FOR MULTIPLEXERS GP
 Jonathan Ellis & Dror Dayan
 ===========================
 
+~~~~ PLEASE CONSULT THE REPORT FOR FURTHER INFORMATION ~~~~
+
 1. COMPILING
 ============
 
-The code has been developed in Java. It can be compiled with the Java compiler as follows:
+The code has been developed in Java. The source can be found in the src folder and it can be
+compiled with the Java compiler as follows:
 
 javac Circuit.java
 
@@ -42,7 +45,7 @@ This will increase the heap to 1GB which should be available on most modern syst
 3. UNDERSTANDING OUTPUT
 =======================
 
-The system outputs data in the following format:
+The system outputs data in the following format to stdout:
 
 G> F\C\M	P
 
@@ -57,7 +60,11 @@ Where:-
 	(and some other languages). IF[x,y,z] is denoted as x ? y : z.
 	
 Once the algorithm has come up with a 100% correct solution, a line of asterisks will appear
-followed immediately by the solution. The application will then terminate.
+followed immediately by the solution along with its representation in a format which
+allows it to be drawn by Mathematica. The application will then terminate.
+
+The output from our sample runs of the algorithm (including timings where appropriate) can be found
+in the outputs folder.
 	
 4. FURTHER QUESTIONS?
 =====================

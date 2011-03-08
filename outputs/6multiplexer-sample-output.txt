@@ -1,0 +1,15 @@
+6 multiplexer sample output
+===========================
+
+0> 56/64/64		(a0 ? (((a0 ? a0 : !d1) ? a1 : !d2) ? d3 : d1) : d2)
+1> 56/64/64		(a0 ? (((a0 ? a0 : !d1) ? a1 : !d2) ? d3 : d1) : d2)
+*********************************************
+2> 64/64		(a0 ? (((a0 ? a0 : a1) ? a1 : !d2) ? d3 : d1) : (a1 ? (a0 ? d3 : d2) : d0))
+You can also plot this in Mathematica using: If[a0, If[If[If[a0, a0, a1], a1, Not[d2]], d3, d1], If[a1, If[a0, d3, d2], d0]] // TreeForm
+
+real	0m0.506s
+user	0m0.546s
+sys		0m0.075s
+
+
+
