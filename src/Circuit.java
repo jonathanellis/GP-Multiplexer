@@ -129,8 +129,8 @@ public class Circuit {
 					int fullFitness = p.fitness();
 					if (fullFitness == maxFitnessCasesCount) {
 						System.out.println("*********************************************");
-						System.out.println(g + "> " + fullFitness + "/" + maxFitnessCasesCount + "\t\t" + genBestProgram.tree);
-
+						System.out.println(g + "> " + fullFitness + "/" + maxFitnessCasesCount + "\t\t" + p.tree);
+						System.out.println("You can also plot this in Mathematica using: " + p.tree.mathematicaNotation() + " // TreeForm");
 						System.exit(0);
 						
 					}
@@ -171,7 +171,7 @@ public class Circuit {
 				c.maxTreeDepth = 8;
 				c.mutationProb = 0.2;
 				c.crossoverProb = 0.8;
-				c.tournamentSampleSize = 100;
+				c.tournamentSampleSize = 50;
 				c.fitnessCasesCount = 64;
 				c.elitismEnabled = true;
 			} else if (args[0].equals("11multiplexer")) {

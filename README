@@ -44,17 +44,17 @@ This will increase the heap to 1GB which should be available on most modern syst
 
 The system outputs data in the following format:
 
-G> F\C\M		P
+G> F\C\M	P
 
-Where:
+Where:-
 
 - G is the generation number.
 - F is the best fitness of that generation (out of C, see below).
 - C is the subset of fitness cases being tested (when sampling is in effect).
 - M is the total number of fitness cases for the current program.
-- P is the genetic program yielding the best fitness of that generation using the regular notation
-	for and, or and not. If is denoted in the ternary format used in Java (and some other
-	languages. IF[x,y,z] is denoted as x ? y : z).
+- P is the genetic program yielding the best fitness of that generation using the regular
+	infix notation for and, or and not. If is denoted in the ternary format used in Java
+	(and some other languages). IF[x,y,z] is denoted as x ? y : z.
 	
 4. FURTHER QUESTIONS?
 =====================
