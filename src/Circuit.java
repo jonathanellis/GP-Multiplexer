@@ -4,6 +4,7 @@ import java.util.Random;
 
 public class Circuit {
 	
+	// USER DEFINED PARAMETERS:
 	private int popSize; // Size of the population (remains constant)
 	private int maxEpochs; // Maximum number of generations until the program should terminate
 	public int initTreeDepth;
@@ -12,12 +13,17 @@ public class Circuit {
 	private double crossoverProb; // Probability of crossover
 	private int tournamentSampleSize; // Size of the sample used in tournament selection
 	private int fitnessCasesCount; // Number of fitness cases to apply (for efficiency, this is a supet of 2^order)
-	public int order; // Order of the multiplexer
 	private boolean elitismEnabled;
 
-	
+	public int order; // Order of the multiplexer [computed at runtime]
+	private int maxFitnessCasesCount; // 2^order [computed at runtime]
+
 	static Random rng = new Random();
 	
+	public Circuit(int order) {
+		this.order = order;
+		this.maxFitnessCasesCount = (int)Math.pow(2,order);
+	}
 	
 	public static <T> T randomSelect(ArrayList<T> population) {
 		int r = rng.nextInt(population.size());
@@ -83,13 +89,13 @@ public class Circuit {
 		Program bestProgram = null;
 		
 		for (int g=0; g<maxEpochs; g++) {
-			ArrayList<Integer> fitnessCases = generateFitnessCases((int) Math.pow(2, order), fitnessCasesCount);
-
+			ArrayList<Integer> fitnessCases = generateFitnessCases(maxFitnessCasesCount, fitnessCasesCount);
 
 			ArrayList<Program> newPopulation = new ArrayList<Program>();
 			
 			// Elitism:
 			if (elitismEnabled) {
+				if (fitnessCasesCount != maxFitnessCasesCount) System.out.println("WARNING: Elitism is enabled but fitnessCasesCount != 2^order. This means elitism will have a limited (or no) effect as fitness cannot be compared between generations");
 				Program prevBestProgram = null;
 				for (Program p : population) {
 					if (prevBestProgram == null) prevBestProgram = p;
@@ -121,10 +127,12 @@ public class Circuit {
 				int f = p.fitness(fitnessCases);
 				if (f == fitnessCases.size()) {
 					int fullFitness = p.fitness();
-					if (fullFitness == Math.pow(2, order)) {
-						System.out.println(p.tree.mathematicaNotation());
-						System.out.println(p.tree.treeHeight());
+					if (fullFitness == maxFitnessCasesCount) {
+						System.out.println("*********************************************");
+						System.out.println(g + "> " + fullFitness + "/" + maxFitnessCasesCount + "\t\t" + genBestProgram.tree);
+
 						System.exit(0);
+						
 					}
 				}
 				if (bestProgram == null) bestProgram = p;
@@ -135,7 +143,7 @@ public class Circuit {
 			}
 		
 			population  = newPopulation;
-			System.out.println(g + "> " + genBestProgram.fitness(fitnessCases) + "\t\t" + genBestProgram.tree);
+			System.out.println(g + "> " + genBestProgram.fitness(fitnessCases) + "/" + fitnessCasesCount + "/" + maxFitnessCasesCount + "\t\t" + genBestProgram.tree);
 		}
 		
 	}
@@ -154,31 +162,31 @@ public class Circuit {
 		if (args.length == 0) {
 			System.out.println("ERROR: You didn't specify the mode you want to run. Valid options: 6multiplexer, 11multipler, 16middle3.");
 		} else {
-			Circuit c = new Circuit();
+			Circuit c = null;
 			if (args[0].equals("6multiplexer")) {
-				c.order = 6;
-				c.popSize = 300;
+				c = new Circuit(6);
+				c.popSize = 500;
 				c.maxEpochs = 10000;
 				c.initTreeDepth = 3;
 				c.maxTreeDepth = 8;
-				c.mutationProb = 0.15;
+				c.mutationProb = 0.2;
 				c.crossoverProb = 0.8;
-				c.tournamentSampleSize = 50;
+				c.tournamentSampleSize = 100;
 				c.fitnessCasesCount = 64;
-				c.elitismEnabled = false;
+				c.elitismEnabled = true;
 			} else if (args[0].equals("11multiplexer")) {
-				c.order = 11;
+				c = new Circuit(11);
 				c.popSize = 3000;
 				c.maxEpochs = 10000;
-				c.initTreeDepth = 4;
-				c.maxTreeDepth = 9;
+				c.initTreeDepth = 3;
+				c.maxTreeDepth = 10;
 				c.mutationProb = 0.15;
 				c.crossoverProb = 0.8;
 				c.tournamentSampleSize = 150;
-				c.fitnessCasesCount = 205;
+				c.fitnessCasesCount = 512;
 				c.elitismEnabled = false;
 			} else if (args[0].equals("16middle3")) {
-				c.order = 16;
+				c = new Circuit(16);
 				c.popSize = 6000;
 				c.maxEpochs = 10000;
 				c.initTreeDepth = 5;
@@ -187,7 +195,7 @@ public class Circuit {
 				c.crossoverProb = 0.8;
 				c.tournamentSampleSize = 150;
 				c.fitnessCasesCount = 300;
-				c.elitismEnabled = true;
+				c.elitismEnabled = false;
 			} else {
 				System.out.println("ERROR: Invalid option. Valid options: 6multiplexer, 11multiplexer, 16middle3.");
 			}
