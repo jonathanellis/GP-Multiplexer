@@ -56,6 +56,9 @@ Where:-
 	infix notation for and, or and not. If is denoted in the ternary format used in Java
 	(and some other languages). IF[x,y,z] is denoted as x ? y : z.
 	
+Once the algorithm has come up with a 100% correct solution, a line of asterisks will appear
+followed immediately by the solution. The application will then terminate.
+	
 4. FURTHER QUESTIONS?
 =====================
 

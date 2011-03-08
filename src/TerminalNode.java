@@ -4,7 +4,7 @@ import java.util.ArrayList;
 public class TerminalNode extends Node {
 	private String t;
 	
-	// Generates a random terminal, based on the specified range:
+	// Generates a random terminal, based on the specified order:
 	public TerminalNode(int multiplexerOrder) {
 		super(multiplexerOrder);
 		

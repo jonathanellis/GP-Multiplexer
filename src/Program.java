@@ -62,13 +62,14 @@ public class Program {
 	private Node generateRandomTree(int depth) {
 		Random rng = new Random();
 		int r = rng.nextInt(4);
+		// Generate random root...
 		Node root;
 		if (r == 0) root =  new AndNode(circuit.order);
 		else if (r == 1) root = new OrNode(circuit.order);
 		else if (r == 2) root = new NotNode(circuit.order);
 		else root = new IfNode(circuit.order);
 		
-		root.grow(depth-1);
+		root.grow(depth-1); // ...then grow
 		return root;
 	}
 	
@@ -77,32 +78,33 @@ public class Program {
 		Node spouseCopy;
 		
 		do {
-			// Copy this tree and spouse:
+			// Copy this tree and spouse (in case we need to retry):
 			treeCopy = tree.clone();
 			spouseCopy = spouse.tree.clone();
 			
-			ArrayList<Node> mCandidates;
+			ArrayList<Node> mCandidates; // mother candidate crossover points
 			ArrayList<Node> mNonTerminals = treeCopy.nonTerminalsToList();
 			if (Circuit.rng.nextFloat() < 0.9 && mNonTerminals.size() > 0) mCandidates = mNonTerminals;
 			else mCandidates = treeCopy.terminalsToList();
 			
-			Node mOp = Circuit.randomSelect(mCandidates);
+			Node mOp = Circuit.randomSelect(mCandidates); // select a random point
 			
-			ArrayList<Node> fCandidates;
+			ArrayList<Node> fCandidates; // father candidate crossover points
 			ArrayList<Node> fNonTerminals = spouseCopy.nonTerminalsToList();
 			if (Circuit.rng.nextFloat() < 0.9 && fNonTerminals.size() > 0) fCandidates = fNonTerminals;
 			else fCandidates = spouseCopy.terminalsToList();
 			
-			Node fOp = Circuit.randomSelect(fCandidates);
+			Node fOp = Circuit.randomSelect(fCandidates); // select a random point
 						
-			if (fOp == spouseCopy) spouseCopy = mOp.clone();
-			else spouseCopy.swapSubtree(fOp, mOp.clone());
+			if (fOp == spouseCopy) spouseCopy = mOp.clone(); // just swap roots
+			else spouseCopy.swapSubtree(fOp, mOp.clone()); // need to splice subtree
 			
-			if (mOp == treeCopy) treeCopy = fOp.clone();
-			else treeCopy.swapSubtree(mOp, fOp.clone());
+			if (mOp == treeCopy) treeCopy = fOp.clone(); // just swap roots
+			else treeCopy.swapSubtree(mOp, fOp.clone()); // need to splice subtree
 			
-		} while (treeCopy.treeHeight() > circuit.maxTreeDepth || spouseCopy.treeHeight() > circuit.maxTreeDepth);
+		} while (treeCopy.treeHeight() > circuit.maxTreeDepth || spouseCopy.treeHeight() > circuit.maxTreeDepth); // do check, if fails then do it all again
 		
+		// array to hold return values:
 		ArrayList<Program> offspring = new ArrayList<Program>();
 		offspring.add(new Program(circuit, treeCopy));
 		offspring.add(new Program(circuit, treeCopy));
@@ -112,15 +114,15 @@ public class Program {
 	public Program mutate() {
 		Node treeCopy;
 		do {
-			treeCopy = tree.clone();
+			treeCopy = tree.clone(); // copy in case we need to redo
 			ArrayList<Node> candidates = treeCopy.nonTerminalsToList();
-			candidates.addAll(treeCopy.terminalsToList());
-			Node p = Circuit.randomSelect(candidates);
+			candidates.addAll(treeCopy.terminalsToList()); // candidates[]  = nonTerminals + terminals
+			Node p = Circuit.randomSelect(candidates); // select random mutation point
 			int treeHeight = Circuit.rng.nextInt(circuit.initTreeDepth+1)+1;
-			Node newTree = generateRandomTree(treeHeight);
-			treeCopy.swapSubtree(p, newTree);
-		} while (treeCopy.treeHeight() > circuit.maxTreeDepth);
-		return new Program(circuit, treeCopy);
+			Node newTree = generateRandomTree(treeHeight); // generate tree using grow() to a random height between 1 and initTreeDepth
+			treeCopy.swapSubtree(p, newTree); // splice in new subtree
+		} while (treeCopy.treeHeight() > circuit.maxTreeDepth); // do check, if fails then redo
+		return new Program(circuit, treeCopy); // return this as a new program (flushes cached fitness)
 	}
 	
 }

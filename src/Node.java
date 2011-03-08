@@ -3,16 +3,16 @@ import java.util.Random;
 
 public abstract class Node implements Cloneable {
 	protected Random rng = new Random();
-	protected int order;
-	public abstract boolean evaluate(Valuation v);
-	public abstract void grow(int maxDepth);
-	public abstract ArrayList<Node> nonTerminalsToList();
-	public abstract ArrayList<Node> terminalsToList();
-	public abstract void swapSubtree(Node o, Node n);
-	public abstract Node clone();
-	public abstract int treeHeight();
-	public abstract int treeHeight(Node o);
-	public abstract String mathematicaNotation();
+	protected int order; // Number of terminals, needed to generate new random terminals where required
+	public abstract boolean evaluate(Valuation v); // Evaluates the tree under some valuation v
+	public abstract void grow(int maxDepth); // Uses the grow method to generate initial trees to a supplied max depth [Koza]
+	public abstract ArrayList<Node> nonTerminalsToList(); // Returns the tree's non-terminals as a list
+	public abstract ArrayList<Node> terminalsToList(); // Returns the tree's terminals as a list
+	public abstract void swapSubtree(Node o, Node n); // Swaps the first subtree with the second tree (or nothing if o doesn't exist).
+	public abstract Node clone(); // Deep-copies the tre
+	public abstract int treeHeight(); // Returns the height of the longest branch of the tree
+	public abstract int treeHeight(Node o); // Returns the height at which the specified subtree begins
+	public abstract String mathematicaNotation(); // Returns the tree in notation that can be used by Mathematica to draw the tre
 	
 	
 	protected Node(int order) {
