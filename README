@@ -5,12 +5,14 @@ Jonathan Ellis & Dror Dayan
 ===========================
 
 1. COMPILING
+============
 
-The code has been developed in Java. It can be compiled with:
+The code has been developed in Java. It can be compiled with the Java compiler as follows:
 
 javac Circuit.java
 
 2. EXECUTING
+============
 
 The program is executed by running:
 
@@ -37,4 +39,24 @@ java -Xmx1g Circuit 16middle3
 
 This will increase the heap to 1GB which should be available on most modern systems.
 
-3. 
+3. UNDERSTANDING OUTPUT
+=======================
+
+The system outputs data in the following format:
+
+G> F\C\M		P
+
+Where:
+
+- G is the generation number.
+- F is the best fitness of that generation (out of C, see below).
+- C is the subset of fitness cases being tested (when sampling is in effect).
+- M is the total number of fitness cases for the current program.
+- P is the genetic program yielding the best fitness of that generation using the regular notation
+	for and, or and not. If is denoted in the ternary format used in Java (and some other
+	languages. IF[x,y,z] is denoted as x ? y : z).
+	
+4. FURTHER QUESTIONS?
+=====================
+
+Email: j.ellis@cs.ucl.ac.uk or d.dayan@cs.ucl.ac.uk
